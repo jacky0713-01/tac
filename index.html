@@ -39,16 +39,13 @@
       gap: 16px;
     }
 
-    /* =========================================================
-       ✨ 華麗頂部標題與頭像動畫特效 (Glorious Header Effects)
-    ========================================================= */
+    /* ✨ 華麗頂部標題與頭像動畫特效 */
     .title-group {
       display: flex;
       align-items: center;
       gap: 16px;
     }
 
-    /* 華麗頭像外框特效 */
     .avatar-wrapper {
       position: relative;
       width: 58px;
@@ -87,13 +84,11 @@
       }
     }
 
-    /* 多重霓光標題 */
     .title-group h1 {
       margin: 0;
       font-size: 1.75rem;
       font-weight: 800;
       letter-spacing: -0.01em;
-      
       background: linear-gradient(
         120deg, 
         #818cf8 0%, 
@@ -105,7 +100,6 @@
       background-size: 300% 300%;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      
       animation: titleGradientFlow 6s ease infinite, titleGlowPulse 2.5s ease-in-out infinite alternate;
       position: relative;
       display: inline-block;
@@ -170,7 +164,6 @@
     .btn-success { background-color: #10b981; color: #fff; }
     .btn-success:hover { background-color: #059669; }
 
-    /* Roblox 按鈕特別樣式 */
     .btn-roblox {
       background: linear-gradient(135deg, #00a2ff, #0066ff);
       color: #fff;
@@ -253,7 +246,6 @@
       color: #fff;
     }
 
-    /* 管理員專屬元素隱藏與控制 */
     .admin-only {
       display: none;
     }
@@ -261,6 +253,7 @@
     body:not(.read-only) .admin-only {
       display: inline-flex;
       gap: 12px;
+      flex-wrap: wrap;
     }
 
     .table-container {
@@ -300,9 +293,7 @@
       vertical-align: middle;
     }
 
-    tr:hover td {
-      background-color: rgba(255, 255, 255, 0.03);
-    }
+    tr:hover td { background-color: rgba(255, 255, 255, 0.03); }
 
     .item-img-container {
       width: 72px;
@@ -341,7 +332,6 @@
       cursor: pointer;
     }
 
-    /* === 稀有度通用標籤 === */
     .rarity-tag {
       display: inline-block;
       padding: 4px 10px;
@@ -353,16 +343,11 @@
       text-transform: capitalize;
     }
 
-    /* === 全稀有度專屬顏色設定 === */
     .rarity-common { color: #9e9e9e; background: rgba(158, 158, 158, 0.15); border: 1px solid #616161; }
     .rarity-uncommon { color: #4caf50; background: rgba(76, 175, 80, 0.15); border: 1px solid #388e3c; }
     .rarity-rare { color: #2196f3; background: rgba(33, 150, 243, 0.15); border: 1px solid #1976d2; }
     .rarity-epic { color: #ab47bc; background: rgba(171, 71, 188, 0.15); border: 1px solid #7b1fa2; }
     .rarity-legendary { color: #ffa726; background: rgba(255, 167, 38, 0.15); border: 1px solid #f57c00; }
-    .rarity-mythic, .rarity-mythical { color: #ef5350; background: rgba(239, 83, 80, 0.15); border: 1px solid #d32f2f; }
-    .rarity-mythic\+ { color: #ff1744; background: rgba(255, 23, 68, 0.2); border: 1px solid #d50000; box-shadow: 0 0 6px rgba(255, 23, 68, 0.4); }
-    .rarity-cosmic { color: #26c6da; background: rgba(38, 198, 218, 0.15); border: 1px solid #0097a7; }
-    .rarity-celestial { color: #ec407a; background: rgba(236, 64, 122, 0.15); border: 1px solid #c2185b; }
     .rarity-chronal { color: #00bcd4; background: rgba(0, 188, 212, 0.15); border: 1px solid #0097a7; }
     .rarity-carved { color: #8d6e63; background: rgba(141, 110, 99, 0.15); border: 1px solid #5d4037; }
     .rarity-honed { color: #78909c; background: rgba(120, 144, 156, 0.15); border: 1px solid #455a64; }
@@ -371,40 +356,6 @@
     .rarity-veiled { color: #a855f7; background: rgba(168, 85, 247, 0.15); border: 1px solid #6b21a8; }
     .rarity-hallowed { color: #ec4899; background: rgba(236, 72, 153, 0.15); border: 1px solid #be185d; }
     .rarity-imperial { color: #f59e0b; background: rgba(245, 158, 11, 0.2); border: 1px solid #d97706; box-shadow: 0 0 8px rgba(245, 158, 11, 0.3); }
-
-    .rarity-godly, .rarity-godlike { color: #ffd700; background: rgba(255, 215, 0, 0.25); border: 1px solid #ffaa00; box-shadow: 0 0 10px rgba(255, 215, 0, 0.4); }
-    .rarity-eternal { color: #10b981; background: rgba(16, 185, 129, 0.2); border: 1px solid #059669; }
-    .rarity-otherversal { color: #3b82f6; background: rgba(59, 130, 246, 0.2); border: 1px solid #1d4ed8; }
-    .rarity-genesis { color: #38bdf8; background: rgba(56, 189, 248, 0.2); border: 1px solid #0284c7; }
-    .rarity-zenith { color: #f43f5e; background: rgba(244, 63, 94, 0.2); border: 1px solid #e11d48; }
-    .rarity-solar { color: #f97316; background: rgba(249, 115, 22, 0.2); border: 1px solid #ea580c; }
-    .rarity-radiant { color: #fef08a; background: rgba(254, 240, 138, 0.25); border: 1px solid #eab308; }
-    .rarity-elysian { color: #a7f3d0; background: rgba(167, 243, 208, 0.2); border: 1px solid #10b981; }
-    .rarity-hyperion { color: #fbbf24; background: rgba(251, 191, 36, 0.2); border: 1px solid #d97706; }
-    .rarity-angelic { color: #e0f2fe; background: rgba(224, 242, 254, 0.2); border: 1px solid #38bdf8; }
-    .rarity-aurelian { color: #fde047; background: rgba(253, 224, 71, 0.2); border: 1px solid #ca8a04; }
-    .rarity-olympian { color: #fb923c; background: rgba(251, 146, 60, 0.2); border: 1px solid #c2410c; }
-    .rarity-promethean { color: #ef4444; background: rgba(239, 68, 68, 0.2); border: 1px solid #b91c1c; }
-    .rarity-chaos { color: #c084fc; background: rgba(192, 132, 252, 0.2); border: 1px solid #7e22ce; }
-    .rarity-arcane { color: #818cf8; background: rgba(129, 140, 248, 0.2); border: 1px solid #4338ca; }
-    .rarity-runic { color: #2dd4bf; background: rgba(45, 212, 191, 0.2); border: 1px solid #0f766e; }
-    .rarity-mystic { color: #a855f7; background: rgba(168, 85, 247, 0.2); border: 1px solid #7e22ce; }
-    .rarity-infernal { color: #dc2626; background: rgba(220, 38, 38, 0.25); border: 1px solid #991b1b; }
-    .rarity-fey { color: #4ade80; background: rgba(74, 222, 128, 0.2); border: 1px solid #15803d; }
-    .rarity-draconic { color: #b91c1c; background: rgba(185, 28, 28, 0.25); border: 1px solid #7f1d1d; }
-    .rarity-fabled { color: #f472b6; background: rgba(244, 114, 182, 0.2); border: 1px solid #be185d; }
-    .rarity-awakened { color: #38bdf8; background: rgba(56, 189, 248, 0.2); border: 1px solid #0369a1; }
-    .rarity-unbound { color: #e879f9; background: rgba(232, 121, 249, 0.2); border: 1px solid #a21caf; }
-    .rarity-kinetic { color: #facc15; background: rgba(250, 204, 21, 0.2); border: 1px solid #854d0e; }
-    .rarity-forged { color: #fb923c; background: rgba(251, 146, 60, 0.2); border: 1px solid #9a3412; }
-    .rarity-gilded { color: #fef08a; background: rgba(254, 240, 138, 0.25); border: 1px solid #ca8a04; }
-    .rarity-victorian { color: #a3e635; background: rgba(163, 230, 53, 0.15); border: 1px solid #4d7c0f; }
-    .rarity-regal { color: #e879f9; background: rgba(232, 121, 249, 0.2); border: 1px solid #86198f; }
-    .rarity-epochal { color: #94a3b8; background: rgba(148, 163, 184, 0.2); border: 1px solid #475569; }
-    .rarity-impossible { color: #ff0055; background: rgba(255, 0, 85, 0.25); border: 1px solid #990033; box-shadow: 0 0 8px rgba(255, 0, 85, 0.5); }
-    .rarity-perpetual { color: #34d399; background: rgba(52, 211, 153, 0.2); border: 1px solid #065f46; }
-    .rarity-colossal { color: #fbbf24; background: rgba(251, 191, 36, 0.2); border: 1px solid #b45309; }
-    .rarity-deus { color: #ffffff; background: rgba(255, 255, 255, 0.25); border: 1px solid #ffffff; box-shadow: 0 0 10px rgba(255, 255, 255, 0.6); }
 
     .status-cell {
       text-align: center;
@@ -422,7 +373,6 @@
     }
 
     .badge-empty { color: #475569; }
-
     .badge-collected {
       background-color: var(--success-bg);
       color: var(--success-text);
@@ -461,9 +411,7 @@
       pointer-events: none;
     }
 
-    /* =========================================================
-       🎴 卡牌相簿模式 (Card Gallery View) 與特效
-    ========================================================= */
+    /* 卡牌檢視 */
     .card-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
@@ -478,37 +426,19 @@
       border-radius: 12px;
       padding: 12px;
       text-align: center;
-      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      transition: transform 0.2s, box-shadow 0.2s;
       display: flex;
       flex-direction: column;
       align-items: center;
       overflow: hidden;
-      user-select: none;
     }
 
-    .item-card:hover {
-      transform: translateY(-5px);
-    }
+    .item-card:hover { transform: translateY(-5px); }
 
     .item-card.locked {
       opacity: 0.6;
       background: #0d1322;
       border-color: #1e293b;
-    }
-
-    .item-card.locked .card-img {
-      filter: brightness(0) drop-shadow(0 0 2px rgba(255, 255, 255, 0.2));
-    }
-
-    .lock-icon {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 32px;
-      pointer-events: none;
-      z-index: 5;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.9));
     }
 
     .card-img-wrapper {
@@ -528,75 +458,6 @@
       max-width: 90%;
       max-height: 90%;
       object-fit: contain;
-      transition: filter 0.3s ease;
-    }
-
-    /* --- 解鎖稀有度動態特效 --- */
-    .item-card.unlocked.fx-godly,
-    .item-card.unlocked.fx-godlike,
-    .item-card.unlocked.fx-deus,
-    .item-card.unlocked.fx-imperial {
-      border-color: #ffd700;
-      background: linear-gradient(145deg, #1e293b 0%, #3a2202 100%);
-      box-shadow: 0 0 18px rgba(255, 215, 0, 0.7);
-      animation: fxGodlyGlow 2.5s infinite alternate;
-    }
-    @keyframes fxGodlyGlow {
-      0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.4); }
-      100% { box-shadow: 0 0 26px rgba(255, 215, 0, 0.9), 0 0 10px rgba(255, 255, 255, 0.8); }
-    }
-
-    .item-card.unlocked.fx-zenith,
-    .item-card.unlocked.fx-impossible,
-    .item-card.unlocked.fx-mythic\+ {
-      border-color: #ff0055;
-      background: linear-gradient(145deg, #1e293b 0%, #3b0014 100%);
-      box-shadow: 0 0 16px rgba(255, 0, 85, 0.7);
-      animation: fxRedPulse 2s infinite alternate;
-    }
-    @keyframes fxRedPulse {
-      0% { box-shadow: 0 0 8px rgba(255, 0, 85, 0.4); }
-      100% { box-shadow: 0 0 22px rgba(255, 23, 68, 0.9); }
-    }
-
-    .item-card.unlocked.fx-eternal,
-    .item-card.unlocked.fx-elysian,
-    .item-card.unlocked.fx-perpetual {
-      border-color: #10b981;
-      background: linear-gradient(145deg, #1e293b 0%, #022c22 100%);
-      box-shadow: 0 0 14px rgba(16, 185, 129, 0.6);
-    }
-
-    .item-card.unlocked.fx-otherversal,
-    .item-card.unlocked.fx-genesis,
-    .item-card.unlocked.fx-awakened,
-    .item-card.unlocked.fx-cosmic {
-      border-color: #38bdf8;
-      background: linear-gradient(145deg, #1e293b 0%, #032d42 100%);
-      box-shadow: 0 0 14px rgba(56, 189, 248, 0.6);
-    }
-
-    .item-card.unlocked.fx-chaos,
-    .item-card.unlocked.fx-unbound,
-    .item-card.unlocked.fx-mystic,
-    .item-card.unlocked.fx-void {
-      border-color: #c084fc;
-      background: radial-gradient(circle, #2d0a3d 0%, #1e293b 100%);
-      box-shadow: 0 0 16px rgba(192, 132, 252, 0.6);
-      animation: fxPurpleGlow 2s infinite alternate;
-    }
-    @keyframes fxPurpleGlow {
-      0% { box-shadow: 0 0 8px rgba(192, 132, 252, 0.4); }
-      100% { box-shadow: 0 0 22px rgba(232, 121, 249, 0.8); }
-    }
-
-    .item-card.unlocked.fx-solar,
-    .item-card.unlocked.fx-promethean,
-    .item-card.unlocked.fx-infernal,
-    .item-card.unlocked.fx-draconic {
-      border-color: #f97316;
-      background: linear-gradient(145deg, #1e293b 0%, #3d1302 100%);
-      box-shadow: 0 0 14px rgba(249, 115, 22, 0.6);
     }
 
     .card-id {
@@ -617,30 +478,6 @@
       text-overflow: ellipsis;
     }
 
-    .card-badges {
-      display: flex;
-      gap: 4px;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 6px;
-    }
-
-    .card-badge-item {
-      font-size: 0.7rem;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: 600;
-      background: #334155;
-      color: #94a3b8;
-    }
-
-    .card-badge-item.active-astral { background: rgba(99, 102, 241, 0.25); color: #818cf8; border: 1px solid #6366f1; }
-    .card-badge-item.active-divine { background: rgba(234, 179, 8, 0.25); color: #fde047; border: 1px solid #eab308; }
-    .card-badge-item.active-void { background: rgba(168, 85, 247, 0.25); color: #c084fc; border: 1px solid #a855f7; }
-
-    /* =========================================================
-       🤝 交易助手 (Trading Helper) 彈窗與面板樣式
-    ========================================================= */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -670,27 +507,6 @@
       box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
     }
 
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-
-    .modal-header h2 {
-      margin: 0;
-      font-size: 1.25rem;
-      color: var(--text-main);
-    }
-
-    .modal-close {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
-
     .trade-textarea {
       width: 100%;
       height: 220px;
@@ -706,34 +522,26 @@
       outline: none;
       margin-bottom: 16px;
     }
-
-    .trade-textarea:focus {
-      border-color: var(--accent);
-    }
   </style>
 </head>
 <body class="read-only">
 
   <header>
     <div class="title-group">
-      <!-- 華麗光暈頭像區塊 -->
       <div class="avatar-wrapper">
         <img src="https://i.ibb.co/vv6Dd3qw/test22.png" alt="Avatar" class="avatar-img">
       </div>
       <h1>新竹九降風清水疾風俠 Roblox Throw a Coin — Collection Index Tracker</h1>
     </div>
     <div class="auth-box">
-      <!-- 🎮 Roblox 聯絡方式：點擊跳轉個人主頁 (1876441) -->
       <a href="https://www.roblox.com/users/10053396167/profile" target="_blank" rel="noopener noreferrer" class="btn btn-roblox" title="前往我的 Roblox 個人主頁">
         🎮 Roblox
       </a>
       
-      <!-- 📋 點擊快速複製 Username (請將 YourUsername 替換為你的帳號) -->
       <button class="btn btn-secondary" onclick="copyRobloxID()" title="點擊複製 Roblox 帳號">
         📋 複製 ID
       </button>
 
-      <!-- 🤝 交易助手設為 admin-only，管理員登入後才顯示 -->
       <button id="trade-btn" class="btn btn-success admin-only">🤝 交易助手</button>
       <span id="auth-status" class="auth-status">當前狀態：瀏覽模式 (唯讀)</span>
       <button id="auth-btn" class="btn">管理員登入</button>
@@ -742,7 +550,6 @@
 
   <script>
     function copyRobloxID() {
-      // 請在此處填寫你的 Roblox 帳號名稱 (Username)
       const robloxUsername = "1876441"; 
       navigator.clipboard.writeText(robloxUsername).then(() => {
         alert("已複製 Roblox 帳號：" + robloxUsername);
@@ -751,21 +558,19 @@
       });
     }
   </script>
-    </div>
-  </header>
 
   <div class="dashboard">
     <div class="stat-card">
       <div class="stat-title">Astral 收集進度</div>
-      <div id="stat-astral" class="stat-value">0 / 188 (0%)</div>
+      <div id="stat-astral" class="stat-value">0 / 0 (0%)</div>
     </div>
     <div class="stat-card">
       <div class="stat-title">Divine 收集進度</div>
-      <div id="stat-divine" class="stat-value">0 / 188 (0%)</div>
+      <div id="stat-divine" class="stat-value">0 / 0 (0%)</div>
     </div>
     <div class="stat-card">
       <div class="stat-title">Void 收集進度</div>
-      <div id="stat-void" class="stat-value">0 / 188 (0%)</div>
+      <div id="stat-void" class="stat-value">0 / 0 (0%)</div>
     </div>
     <div class="stat-card">
       <div class="stat-title">Astral 總數量</div>
@@ -781,7 +586,10 @@
       <button id="btn-view-card" class="view-btn">🎴 卡牌相簿</button>
     </div>
 
+    <!-- 管理員控制區塊（包含動態新增/刪除列） -->
     <div class="admin-only">
+      <button id="add-item-btn" class="btn btn-success">➕ 新增物品列</button>
+      <button id="delete-item-btn" class="btn btn-danger">🗑️ 刪除最後一列</button>
       <button id="export-csv-btn" class="btn btn-secondary">📥 匯出 CSV</button>
       <button id="export-json-btn" class="btn btn-secondary">💾 備份 JSON</button>
       <button id="import-btn" class="btn btn-warning">📤 匯入 JSON 備份</button>
@@ -789,7 +597,7 @@
     </div>
   </div>
 
-  <!-- 表格檢視區域 -->
+  <!-- 表格檢視 -->
   <div id="table-view-container" class="table-container">
     <table>
       <thead>
@@ -802,6 +610,7 @@
           <th style="width: 130px; text-align: center;">ASTRAL COUNT</th>
           <th style="width: 120px; text-align: center;">DIVINE</th>
           <th style="width: 120px; text-align: center;">VOID</th>
+          <th class="admin-only" style="width: 80px; text-align: center;">操作</th>
         </tr>
       </thead>
       <tbody id="table-body">
@@ -809,16 +618,16 @@
     </table>
   </div>
 
-  <!-- 卡牌相簿區域 -->
+  <!-- 卡牌相簿 -->
   <div id="card-view-container" class="card-grid" style="display: none;">
   </div>
 
-  <!-- 🤝 交易助手 Modal 面板 -->
+  <!-- 🤝 交易助手 Modal -->
   <div id="trade-modal-overlay" class="modal-overlay">
     <div class="trade-modal">
-      <div class="modal-header">
-        <h2>🤝 Discord 交易格式產生器</h2>
-        <button id="modal-close-btn" class="modal-close">&times;</button>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h2 style="margin: 0; color: var(--text-main);">🤝 Discord 交易格式產生器</h2>
+        <button id="modal-close-btn" style="background: transparent; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;">&times;</button>
       </div>
       <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
         自動依據您的圖鑑生成 Discord 交易頻道的專屬格式：
@@ -871,10 +680,10 @@
       181: { name: "Imperial Seal", rarity: "Imperial" }
     };
 
-    const TOTAL_ITEMS = 188;
+    let totalItems = 188;
     let itemsData = {};
 
-    for (let i = 1; i <= TOTAL_ITEMS; i++) {
+    for (let i = 1; i <= totalItems; i++) {
       const preset = defaultDatabase[i] || {};
       itemsData[`item_${i}`] = {
         id: i,
@@ -894,17 +703,11 @@
     const authBtn = document.getElementById("auth-btn");
     const authStatus = document.getElementById("auth-status");
     const searchInput = document.getElementById("search-input");
-    const importBtn = document.getElementById("import-btn");
-    const importFileInput = document.getElementById("import-file-input");
     const btnViewTable = document.getElementById("btn-view-table");
     const btnViewCard = document.getElementById("btn-view-card");
 
-    // 交易助手 DOM
-    const tradeBtn = document.getElementById("trade-btn");
-    const tradeOverlay = document.getElementById("trade-modal-overlay");
-    const closeModalBtn = document.getElementById("modal-close-btn");
-    const tradeTextOutput = document.getElementById("trade-text-output");
-    const copyTradeBtn = document.getElementById("copy-trade-btn");
+    const addItemBtn = document.getElementById("add-item-btn");
+    const deleteItemBtn = document.getElementById("delete-item-btn");
 
     function render() {
       const query = searchInput.value.toLowerCase().trim();
@@ -917,6 +720,7 @@
       let voidCollected = 0;
 
       const sortedKeys = Object.keys(itemsData).sort((a, b) => itemsData[a].id - itemsData[b].id);
+      const totalCount = sortedKeys.length;
 
       sortedKeys.forEach(key => {
         const item = itemsData[key];
@@ -931,308 +735,227 @@
 
         const safeRarityName = item.rarity ? item.rarity.toLowerCase().replace(/[^a-z0-9]/g, '\\$&') : 'common';
         const rarityClass = `rarity-${safeRarityName}`;
-        const isUnlocked = item.astral || item.divine || item.void || (item.astralCount > 0);
 
         // 1. 渲染表格列
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td><strong>#${item.id}</strong></td>
-          <td class="editable-cell" ondblclick="editField('${key}', 'name')" title="登入後雙擊修改名稱"><strong>${item.name}</strong></td>
-          <td class="editable-cell" style="text-align: left; padding-left: 10px;" ondblclick="editField('${key}', 'imageUrl')" title="登入後雙擊設定圖片網址">
+          <td class="editable-cell" data-action="edit-name" data-key="${key}" title="登入後雙擊修改名稱"><strong>${item.name}</strong></td>
+          <td class="editable-cell" data-action="edit-img" data-key="${key}" style="text-align: left; padding-left: 10px;" title="登入後雙擊設定圖片網址">
             <div class="item-img-container">
               ${item.imageUrl ? `<img src="${item.imageUrl}" class="item-img" alt="${item.name}">` : `<span class="img-placeholder">+圖片</span>`}
             </div>
           </td>
-          <td class="editable-cell" ondblclick="editField('${key}', 'rarity')" title="登入後雙擊修改稀有度">
+          <td class="editable-cell" data-action="edit-rarity" data-key="${key}" title="登入後雙擊修改稀有度">
             <span class="rarity-tag ${rarityClass}">${item.rarity}</span>
           </td>
-          <td class="status-cell" onclick="toggleStatus('${key}', 'astral')">
+          <td class="status-cell" data-action="toggle-astral" data-key="${key}">
             <span class="badge ${item.astral ? 'badge-collected' : 'badge-empty'}">${item.astral ? '✓ 已收集' : '-'}</span>
           </td>
           <td class="status-cell">
             <div class="count-box">
-              <button class="count-btn" onclick="adjustCount(event, '${key}', -1)">-</button>
-              <span onclick="editCountDirect('${key}')" style="min-width: 24px; text-align: center; font-weight: 700;">${item.astralCount || 0}</span>
-              <button class="count-btn" onclick="adjustCount(event, '${key}', 1)">+</button>
+              <button class="count-btn" data-action="adjust-count" data-key="${key}" data-val="-1">-</button>
+              <span data-action="direct-count" data-key="${key}" style="min-width: 24px; text-align: center;">${item.astralCount || 0}</span>
+              <button class="count-btn" data-action="adjust-count" data-key="${key}" data-val="1">+</button>
             </div>
           </td>
-          <td class="status-cell" onclick="toggleStatus('${key}', 'divine')">
+          <td class="status-cell" data-action="toggle-divine" data-key="${key}">
             <span class="badge ${item.divine ? 'badge-collected' : 'badge-empty'}">${item.divine ? '✓ 已收集' : '-'}</span>
           </td>
-          <td class="status-cell" onclick="toggleStatus('${key}', 'void')">
+          <td class="status-cell" data-action="toggle-void" data-key="${key}">
             <span class="badge ${item.void ? 'badge-collected' : 'badge-empty'}">${item.void ? '✓ 已收集' : '-'}</span>
+          </td>
+          <td class="admin-only" style="text-align: center;">
+            <button class="btn btn-danger" data-action="delete-single" data-key="${key}" style="padding: 2px 8px; font-size: 0.75rem;">刪除</button>
           </td>
         `;
         tbody.appendChild(tr);
 
-        // 2. 渲染卡牌相簿
-        const fxClass = item.rarity ? `fx-${item.rarity.toLowerCase().replace(/[^a-z0-9]/g, '')}` : '';
-
+        // 2. 渲染卡牌
         const card = document.createElement("div");
-        card.className = `item-card ${isUnlocked ? 'unlocked' : 'locked'} ${fxClass}`;
+        const isUnlocked = item.astral || item.divine || item.void || (item.astralCount > 0);
+        card.className = `item-card ${isUnlocked ? 'unlocked' : 'locked'}`;
         card.innerHTML = `
           <div class="card-id">#${item.id}</div>
+          <div class="card-title">${item.name}</div>
           <div class="card-img-wrapper">
-            ${item.imageUrl ? `<img src="${item.imageUrl}" class="card-img" alt="${item.name}">` : `<span class="img-placeholder">+圖片</span>`}
-            ${!isUnlocked ? '<div class="lock-icon">🔒</div>' : ''}
+            ${item.imageUrl ? `<img src="${item.imageUrl}" class="card-img" alt="${item.name}">` : `<span class="img-placeholder">無圖片</span>`}
           </div>
-          <div class="card-title" title="${item.name}">${item.name}</div>
-          <span class="rarity-tag ${rarityClass}" style="margin-top: 4px; font-size: 0.7rem; padding: 2px 6px;">${item.rarity}</span>
-          <div class="card-badges">
-            <span class="card-badge-item ${item.astral ? 'active-astral' : ''}">A: ${item.astralCount || 0}</span>
-            <span class="card-badge-item ${item.divine ? 'active-divine' : ''}">D</span>
-            <span class="card-badge-item ${item.void ? 'active-void' : ''}">V</span>
-          </div>
+          <span class="rarity-tag ${rarityClass}">${item.rarity}</span>
         `;
         cardContainer.appendChild(card);
       });
 
-      document.getElementById("stat-astral").innerText = `${astralCollected} / ${TOTAL_ITEMS} (${((astralCollected/TOTAL_ITEMS)*100).toFixed(1)}%)`;
-      document.getElementById("stat-divine").innerText = `${divineCollected} / ${TOTAL_ITEMS} (${((divineCollected/TOTAL_ITEMS)*100).toFixed(1)}%)`;
-      document.getElementById("stat-void").innerText = `${voidCollected} / ${TOTAL_ITEMS} (${((voidCollected/TOTAL_ITEMS)*100).toFixed(1)}%)`;
+      // 更新進度卡片
+      document.getElementById("stat-astral").innerText = `${astralCollected} / ${totalCount} (${Math.round((astralCollected / totalCount) * 100 || 0)}%)`;
+      document.getElementById("stat-divine").innerText = `${divineCollected} / ${totalCount} (${Math.round((divineCollected / totalCount) * 100 || 0)}%)`;
+      document.getElementById("stat-void").innerText = `${voidCollected} / ${totalCount} (${Math.round((voidCollected / totalCount) * 100 || 0)}%)`;
       document.getElementById("stat-count-total").innerText = astralCountSum;
-
-      updateTradingText();
     }
 
-    // 生成專屬 Discord 交易格式
-    function updateTradingText() {
-      let lfList = [];
-      let haveList = [];
+    // 事件委派：點擊與雙擊操作
+    tbody.addEventListener("click", (e) => {
+      const target = e.target.closest("[data-action]");
+      if (!target || document.body.classList.contains("read-only")) return;
 
-      const sortedKeys = Object.keys(itemsData).sort((a, b) => itemsData[a].id - itemsData[b].id);
+      const action = target.dataset.action;
+      const key = target.dataset.key;
 
-      sortedKeys.forEach(key => {
-        const item = itemsData[key];
-        const isUnlocked = item.astral || item.divine || item.void || (item.astralCount > 0);
+      if (action === "toggle-astral") toggleStatus(key, "astral");
+      if (action === "toggle-divine") toggleStatus(key, "divine");
+      if (action === "toggle-void") toggleStatus(key, "void");
+      if (action === "adjust-count") adjustCount(key, parseInt(target.dataset.val));
+      if (action === "direct-count") editCountDirect(key);
+      if (action === "delete-single") deleteSingleItem(key);
+    });
 
-        // LF (未收集)
-        if (!isUnlocked) {
-          lfList.push(`Astral/Divine/Void "${item.name}"`);
-        }
+    tbody.addEventListener("dblclick", (e) => {
+      const target = e.target.closest("[data-action]");
+      if (!target || document.body.classList.contains("read-only")) return;
 
-        // I have (多餘數量)
-        if (item.astralCount > 1) {
-          const extraCount = item.astralCount - 1;
-          haveList.push(`Astral "${item.name}" x${extraCount}`);
-        }
-      });
+      const action = target.dataset.action;
+      const key = target.dataset.key;
 
-      let tradeStr = `LF\n`;
-      tradeStr += lfList.length > 0 ? lfList.join('\n') : 'None';
-      tradeStr += `\n\nI have \n`;
-      tradeStr += haveList.length > 0 ? haveList.join('\n') : 'None';
-      tradeStr += `\n\nNo tradeback\nDM`;
+      if (action === "edit-name") editField(key, "name");
+      if (action === "edit-img") editField(key, "imageUrl");
+      if (action === "edit-rarity") editField(key, "rarity");
+    });
 
-      tradeTextOutput.value = tradeStr;
-    }
-
-    // Modal 控制邏輯
-    tradeBtn.onclick = () => {
-      if (!auth.currentUser) return;
-      updateTradingText();
-      tradeOverlay.classList.add("active");
-    };
-
-    closeModalBtn.onclick = () => {
-      tradeOverlay.classList.remove("active");
-    };
-
-    tradeOverlay.onclick = (e) => {
-      if (e.target === tradeOverlay) tradeOverlay.classList.remove("active");
-    };
-
-    copyTradeBtn.onclick = () => {
-      tradeTextOutput.select();
-      navigator.clipboard.writeText(tradeTextOutput.value).then(() => {
-        const originalText = copyTradeBtn.innerText;
-        copyTradeBtn.innerText = "✓ 已成功複製！";
-        setTimeout(() => { copyTradeBtn.innerText = originalText; }, 2000);
-      });
-    };
-
-    // 視圖切換
-    btnViewTable.onclick = () => {
-      btnViewTable.classList.add("active");
-      btnViewCard.classList.remove("active");
-      tableViewContainer.style.display = "block";
-      cardContainer.style.display = "none";
-    };
-
-    btnViewCard.onclick = () => {
-      btnViewCard.classList.add("active");
-      btnViewTable.classList.remove("active");
-      tableViewContainer.style.display = "none";
-      cardContainer.style.display = "grid";
-    };
-
-    window.editField = async (key, field) => {
-      if (!auth.currentUser) return;
-      let labelMap = { name: '物品名稱', imageUrl: '圖片網址 (URL)', rarity: '稀有度' };
-      const currentVal = itemsData[key][field] || '';
-      const newVal = prompt(`請輸入新的 ${labelMap[field]}（編號 #${itemsData[key].id}）：`, currentVal);
+    // 編輯欄位
+    function editField(key, field) {
+      const currentVal = itemsData[key][field] || "";
+      const newVal = prompt(`請輸入新的 ${field}：`, currentVal);
       if (newVal !== null) {
         itemsData[key][field] = newVal.trim();
-        render();
-        await syncToCloud();
-      }
-    };
-
-    window.toggleStatus = async (key, type) => {
-      if (!auth.currentUser) return;
-      itemsData[key][type] = !itemsData[key][type];
-      render();
-      await syncToCloud();
-    };
-
-    window.adjustCount = async (e, key, delta) => {
-      e.stopPropagation();
-      if (!auth.currentUser) return;
-      const current = itemsData[key].astralCount || 0;
-      itemsData[key].astralCount = Math.max(0, current + delta);
-      render();
-      await syncToCloud();
-    };
-
-    window.editCountDirect = async (key) => {
-      if (!auth.currentUser) return;
-      const current = itemsData[key].astralCount || 0;
-      const input = prompt(`請輸入 ${itemsData[key].name} 的 Astral 數量：`, current);
-      if (input !== null && !isNaN(input)) {
-        itemsData[key].astralCount = Math.max(0, parseInt(input, 10));
-        render();
-        await syncToCloud();
-      }
-    };
-
-    async function syncToCloud() {
-      try {
-        await setDoc(doc(db, "tracker", "progress"), { items: itemsData }, { merge: true });
-      } catch (e) {
-        console.error("同步失敗：", e);
+        saveData();
       }
     }
 
-    onSnapshot(doc(db, "tracker", "progress"), (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        if (data.items) {
-          Object.keys(data.items).forEach(key => {
-            if (itemsData[key]) {
-              itemsData[key] = { ...itemsData[key], ...data.items[key] };
-            }
-          });
-          render();
-        }
+    // 切換狀態
+    function toggleStatus(key, field) {
+      itemsData[key][field] = !itemsData[key][field];
+      saveData();
+    }
+
+    // 調整數量
+    function adjustCount(key, delta) {
+      const current = itemsData[key].astralCount || 0;
+      itemsData[key].astralCount = Math.max(0, current + delta);
+      saveData();
+    }
+
+    function editCountDirect(key) {
+      const current = itemsData[key].astralCount || 0;
+      const newVal = prompt("請直接輸入 Astral 數量：", current);
+      if (newVal !== null && !isNaN(newVal)) {
+        itemsData[key].astralCount = Math.max(0, parseInt(newVal));
+        saveData();
+      }
+    }
+
+    // ➕ 動態新增列 (Item)
+    addItemBtn.addEventListener("click", () => {
+      const keys = Object.keys(itemsData).map(k => itemsData[k].id);
+      const nextId = keys.length > 0 ? Math.max(...keys) + 1 : 1;
+
+      const name = prompt(`請輸入新物品 (ID #${nextId}) 的名稱：`, `物品 #${nextId}`);
+      if (!name) return;
+
+      const rarity = prompt("請輸入稀有度 (例如: Common, Rare, Imperial...):", "Common") || "Common";
+
+      itemsData[`item_${nextId}`] = {
+        id: nextId,
+        name: name,
+        rarity: rarity,
+        imageUrl: "",
+        astral: false,
+        astralCount: 0,
+        divine: false,
+        void: false
+      };
+
+      saveData();
+    });
+
+    // 🗑️ 刪除最後一列
+    deleteItemBtn.addEventListener("click", () => {
+      const keys = Object.keys(itemsData).sort((a, b) => itemsData[a].id - itemsData[b].id);
+      if (keys.length === 0) return alert("目前已無任何物品可刪除！");
+
+      const lastKey = keys[keys.length - 1];
+      if (confirm(`確定要刪除最後一項物品 [#${itemsData[lastKey].id} ${itemsData[lastKey].name}] 嗎？`)) {
+        delete itemsData[lastKey];
+        saveData();
       }
     });
 
-    // 匯出 CSV
-    document.getElementById("export-csv-btn").onclick = () => {
-      if (!auth.currentUser) return;
-      let csvContent = "\uFEFF編號,物品名稱,稀有度,Astral,Astral數量,Divine,Void,圖片網址\n";
-      const sortedKeys = Object.keys(itemsData).sort((a, b) => itemsData[a].id - itemsData[b].id);
-      
-      sortedKeys.forEach(key => {
-        const item = itemsData[key];
-        const row = [
-          item.id,
-          `"${item.name.replace(/"/g, '""')}"`,
-          `"${item.rarity}"`,
-          item.astral ? "已收集" : "未收集",
-          item.astralCount || 0,
-          item.divine ? "已收集" : "未收集",
-          item.void ? "已收集" : "未收集",
-          `"${item.imageUrl || ''}"`
-        ];
-        csvContent += row.join(",") + "\n";
-      });
+    // 刪除指定列
+    function deleteSingleItem(key) {
+      if (confirm(`確定刪除 [#${itemsData[key].id} ${itemsData[key].name}] 嗎？`)) {
+        delete itemsData[key];
+        saveData();
+      }
+    }
 
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.setAttribute("href", url);
-      link.setAttribute("download", `TAC_Collection_Backup_${new Date().toISOString().slice(0,10)}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    };
+    // 資料儲存與同步 (Firebase)
+    function saveData() {
+      render();
+      setDoc(doc(db, "trackers", "main_tracker"), { items: itemsData }, { merge: true })
+        .catch(err => console.error("雲端同步失敗：", err));
+    }
 
-    // 匯出 JSON
-    document.getElementById("export-json-btn").onclick = () => {
-      if (!auth.currentUser) return;
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(itemsData, null, 2));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `TAC_Collection_Data_${new Date().toISOString().slice(0,10)}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-    };
+    // 即時監聽 Firestore
+    onSnapshot(doc(db, "trackers", "main_tracker"), (snapshot) => {
+      if (snapshot.exists() && snapshot.data().items) {
+        itemsData = snapshot.data().items;
+        render();
+      }
+    });
 
-    // 匯入 JSON 備份檔案
-    importBtn.onclick = () => {
-      if (!auth.currentUser) return;
-      importFileInput.click();
-    };
-
-    importFileInput.onchange = (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        try {
-          const importedData = JSON.parse(event.target.result);
-          if (typeof importedData === 'object' && importedData !== null) {
-            if (confirm("警告：匯入新資料將會覆蓋當前雲端資料庫的設定，確定要匯入嗎？")) {
-              itemsData = { ...itemsData, ...importedData };
-              render();
-              await syncToCloud();
-              alert("資料匯入成功並已同步至雲端！");
-            }
-          } else {
-            alert("匯入失敗：格式不符合 JSON 資料架構！");
-          }
-        } catch (err) {
-          alert("匯入失敗：無法解析該 JSON 檔案！");
+    // 管理員登入切換
+    authBtn.addEventListener("click", () => {
+      if (auth.currentUser) {
+        signOut(auth);
+      } else {
+        const email = prompt("請輸入管理員 Email：");
+        const password = prompt("請輸入密碼：");
+        if (email && password) {
+          signInWithEmailAndPassword(auth, email, password)
+            .catch(err => alert("登入失敗：" + err.message));
         }
-        importFileInput.value = '';
-      };
-      reader.readAsText(file);
-    };
-
-    searchInput.addEventListener("input", render);
+      }
+    });
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
         document.body.classList.remove("read-only");
-        authStatus.innerText = `管理者已登入 (${user.email})`;
+        authStatus.innerText = "當前狀態：管理員已登入";
         authBtn.innerText = "登出";
-        authBtn.classList.add("btn-danger");
       } else {
         document.body.classList.add("read-only");
         authStatus.innerText = "當前狀態：瀏覽模式 (唯讀)";
         authBtn.innerText = "管理員登入";
-        authBtn.classList.remove("btn-danger");
       }
+      render();
     });
 
-    authBtn.onclick = async () => {
-      if (auth.currentUser) {
-        await signOut(auth);
-      } else {
-        const email = prompt("請輸入管理者 Email：");
-        const password = prompt("請輸入密碼：");
-        if (email && password) {
-          try {
-            await signInWithEmailAndPassword(auth, email, password);
-          } catch (err) {
-            alert("登入失敗：帳號或密碼錯誤！");
-          }
-        }
-      }
-    };
+    // 切換視圖
+    btnViewTable.addEventListener("click", () => {
+      btnViewTable.classList.add("active");
+      btnViewCard.classList.remove("active");
+      tableViewContainer.style.display = "block";
+      cardContainer.style.display = "none";
+    });
+
+    btnViewCard.addEventListener("click", () => {
+      btnViewCard.classList.add("active");
+      btnViewTable.classList.remove("active");
+      tableViewContainer.style.display = "none";
+      cardContainer.style.display = "grid";
+    });
+
+    // 搜尋過濾
+    searchInput.addEventListener("input", render);
 
     render();
   </script>
