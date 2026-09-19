@@ -783,70 +783,13 @@
 
     <div class="admin-only">
       <button id="export-csv-btn" class="btn btn-secondary">📥 匯出 CSV</button>
-      <button id="add-item-btn" class="btn btn-success">➕ 新增物品 (列)</button>
-      <button id="delete-item-btn" class="btn btn-danger">🗑️ 刪除最後一列</button>
-      <button id="add-col-btn" class="btn btn-warning">➕ 新增欄位 (欄)</button>
-      <button id="del-col-btn" class="btn btn-danger">🗑️ 刪除自訂欄位</button>
+      <button id="export-json-btn" class="btn btn-secondary">💾 備份 JSON</button>
+      <button id="import-btn" class="btn btn-warning">📤 匯入 JSON 備份</button>
       <input type="file" id="import-file-input" accept=".json" style="display: none;">
-      // ➕ 新增列 (Item)
-document.getElementById("add-item-btn")?.addEventListener("click", () => {
-  const keys = Object.keys(itemsData).map(k => itemsData[k].id || 0);
-  const nextId = keys.length > 0 ? Math.max(...keys) + 1 : 1;
-  const name = prompt(`請輸入新物品 (ID #${nextId}) 名稱：`, `物品 #${nextId}`);
-  if (!name) return;
-
-  itemsData[`item_${nextId}`] = {
-    id: nextId,
-    name: name,
-    rarity: "Common",
-    imageUrl: "",
-    astral: false,
-    astralCount: 0,
-    divine: false,
-    void: false
-  };
-  saveData();
-});
-
-// 🗑️ 刪除最後一列
-document.getElementById("delete-item-btn")?.addEventListener("click", () => {
-  const keys = Object.keys(itemsData).sort((a, b) => itemsData[a].id - itemsData[b].id);
-  if (keys.length === 0) return alert("目前沒有物品可刪除！");
-  const lastKey = keys[keys.length - 1];
-  if (confirm(`確定刪除最後一列 [#${itemsData[lastKey].id} ${itemsData[lastKey].name}] 嗎？`)) {
-    delete itemsData[lastKey];
-    saveData();
-  }
-});
-
-// ➕ 新增欄位 (Column)
-document.getElementById("add-col-btn")?.addEventListener("click", () => {
-  const name = prompt("請輸入新欄位名稱 (例如：SHINY, MUTATED)：");
-  if (!name) return;
-  const isBoolean = confirm("該欄位類型是否為「勾選框 (是/否)」？\n[按確定] 勾選方塊\n[按取消] 數字計數器");
-  
-  const colKey = "col_" + Date.now();
-  customColumns.push({
-    key: colKey,
-    name: name,
-    type: isBoolean ? "boolean" : "number"
-  });
-
-  saveData();
-});
-
-// 🗑️ 刪除自訂欄位
-document.getElementById("del-col-btn")?.addEventListener("click", () => {
-  if (customColumns.length === 0) return alert("目前沒有自訂欄位可刪除！");
-  const names = customColumns.map((c, i) => `${i + 1}. ${c.name}`).join("\n");
-  const indexStr = prompt(`請輸入要刪除的欄位編號：\n${names}`);
-  const index = parseInt(indexStr) - 1;
-
-  if (!isNaN(index) && index >= 0 && index < customColumns.length) {
-    customColumns.splice(index, 1);
-    saveData();
-  }
-});
+      <button id="add-item-btn" class="btn btn-success">➕ 新增物品 (列)</button>
+  <button id="delete-item-btn" class="btn btn-danger">🗑️ 刪除最後一列</button>
+  <button id="add-col-btn" class="btn btn-warning">➕ 新增欄位 (欄)</button>
+  <button id="del-col-btn" class="btn btn-danger">🗑️ 刪除自訂欄位</button>
     </div>
   </div>
 
@@ -967,34 +910,33 @@ document.getElementById("del-col-btn")?.addEventListener("click", () => {
     const tradeTextOutput = document.getElementById("trade-text-output");
     const copyTradeBtn = document.getElementById("copy-trade-btn");
 
-   // 宣告全域自訂欄位陣列（放在 render 函式外面）
-let customColumns = []; 
+    function render() {
+      const query = searchInput.value.toLowerCase().trim();
+      tbody.innerHTML = "";
+      cardContainer.innerHTML = "";
 
-function render() {
-  const query = searchInput.value.toLowerCase().trim();
+      let astralCountSum = 0;
+      let astralCollected = 0;
+      let divineCollected = 0;
+      let voidCollected = 0;
 
-  // 1. 動態渲染 Header 標題欄位
-  headerRow.innerHTML = `
-    <th style="width: 70px;">編號</th>
-    <th style="width: 140px;">物品名稱</th>
-    <th style="width: 90px; text-align: center;">圖片</th>
-    <th style="width: 120px;">稀有度</th>
-    <th style="width: 110px; text-align: center;">ASTRAL</th>
-    <th style="width: 120px; text-align: center;">ASTRAL COUNT</th>
-    <th style="width: 110px; text-align: center;">DIVINE</th>
-    <th style="width: 110px; text-align: center;">VOID</th>
-  `;
+      const sortedKeys = Object.keys(itemsData).sort((a, b) => itemsData[a].id - itemsData[b].id);
 
-  // 動態插入自訂欄位標題
-  customColumns.forEach(col => {
-    const th = document.createElement("th");
-    th.style.textAlign = "center";
-    th.innerText = col.name.toUpperCase();
-    headerRow.appendChild(th);
-  });
-  
-  // ... 後續保持您原本的內容渲染邏輯 ...
-}
+      sortedKeys.forEach(key => {
+        const item = itemsData[key];
+
+        if (item.astral) astralCollected++;
+        if (item.divine) divineCollected++;
+        if (item.void) voidCollected++;
+        astralCountSum += (item.astralCount || 0);
+
+        const matchSearch = item.name.toLowerCase().includes(query) || String(item.id).includes(query);
+        if (!matchSearch) return;
+
+        const safeRarityName = item.rarity ? item.rarity.toLowerCase().replace(/[^a-z0-9]/g, '\\$&') : 'common';
+        const rarityClass = `rarity-${safeRarityName}`;
+        const isUnlocked = item.astral || item.divine || item.void || (item.astralCount > 0);
+
         // 1. 渲染表格列
         const tr = document.createElement("tr");
         tr.innerHTML = `
