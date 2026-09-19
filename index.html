@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roblox Throw a Coin — Collection Index Tracker</title>
+  <!-- 引用外部 CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="read-only">
+
+  <header>
+    <div class="title-group">
+      <div class="avatar-wrapper">
+        <img src="https://i.ibb.co/vv6Dd3qw/test22.png" alt="Avatar" class="avatar-img">
+      </div>
+      <h1>新竹九降風清水疾風俠 Roblox Throw a Coin — Collection Index Tracker</h1>
+    </div>
+    <div class="auth-box">
+      <a href="https://www.roblox.com/users/10053396167/profile" target="_blank" rel="noopener noreferrer" class="btn btn-roblox" title="前往我的 Roblox 個人主頁">
+        🎮 Roblox
+      </a>
+      
+      <button class="btn btn-secondary" onclick="copyRobloxID()" title="點擊複製 Roblox 帳號">
+        📋 複製 ID
+      </button>
+
+      <button id="trade-btn" class="btn btn-success admin-only">🤝 交易助手</button>
+      <span id="auth-status" class="auth-status">當前狀態：瀏覽模式 (唯讀)</span>
+      <button id="auth-btn" class="btn">管理員登入</button>
+    </div>
+  </header>
+
+  <script>
+    function copyRobloxID() {
+      const robloxUsername = "1876441"; 
+      navigator.clipboard.writeText(robloxUsername).then(() => {
+        alert("已複製 Roblox 帳號：" + robloxUsername);
+      }).catch(err => {
+        console.error("複製失敗：", err);
+      });
+    }
+  </script>
+
+  <div class="dashboard">
+    <div class="stat-card">
+      <div class="stat-title">Astral 收集進度</div>
+      <div id="stat-astral" class="stat-value">0 / 188 (0%)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Divine 收集進度</div>
+      <div id="stat-divine" class="stat-value">0 / 188 (0%)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Void 收集進度</div>
+      <div id="stat-void" class="stat-value">0 / 188 (0%)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Astral 總數量</div>
+      <div id="stat-count-total" class="stat-value">0</div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <input type="text" id="search-input" class="search-input" placeholder="搜尋物品名稱或編號 (登入後雙擊名稱/圖片/稀有度可編輯)...">
+    
+    <div class="view-toggle-container">
+      <button id="btn-view-table" class="view-btn active">📊 表格</button>
+      <button id="btn-view-card" class="view-btn">🎴 卡牌相簿</button>
+    </div>
+
+    <div class="admin-only">
+      <button id="add-item-btn" class="btn btn-success">➕ 新增物品 (列)</button>
+      <button id="delete-item-btn" class="btn btn-danger">🗑️ 刪除最後一列</button>
+      <button id="add-col-btn" class="btn btn-warning">➕ 新增欄位 (欄)</button>
+      <button id="del-col-btn" class="btn btn-danger">🗑️ 刪除自訂欄位</button>
+      <button id="export-csv-btn" class="btn btn-secondary">📥 匯出 CSV</button>
+      <button id="export-json-btn" class="btn btn-secondary">💾 備份 JSON</button>
+      <button id="import-btn" class="btn btn-warning">📤 匯入 JSON 備份</button>
+      <input type="file" id="import-file-input" accept=".json" style="display: none;">
+    </div>
+  </div>
+
+  <!-- 表格檢視區域 -->
+  <div id="table-view-container" class="table-container">
+    <table>
+      <thead>
+        <tr id="table-header-row">
+          <th style="width: 70px;">編號</th>
+          <th style="width: 140px;">物品名稱</th>
+          <th style="width: 100px; text-align: left; padding-left: 10px;">圖片</th>
+          <th style="width: 130px;">稀有度</th>
+          <th style="width: 120px; text-align: center;">ASTRAL</th>
+          <th style="width: 130px; text-align: center;">ASTRAL COUNT</th>
+          <th style="width: 120px; text-align: center;">DIVINE</th>
+          <th style="width: 120px; text-align: center;">VOID</th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 卡牌相簿區域 -->
+  <div id="card-view-container" class="card-grid" style="display: none;">
+  </div>
+
+  <!-- 🤝 交易助手 Modal 面板 -->
+  <div id="trade-modal-overlay" class="modal-overlay">
+    <div class="trade-modal">
+      <div class="modal-header">
+        <h2>🤝 Discord 交易格式產生器</h2>
+        <button id="modal-close-btn" class="modal-close">&times;</button>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
+        自動依據您的圖鑑生成 Discord 交易頻道的專屬格式：
+      </p>
+      <textarea id="trade-text-output" class="trade-textarea" readonly></textarea>
+      <div style="display: flex; justify-content: flex-end; gap: 12px;">
+        <button id="copy-trade-btn" class="btn btn-success">📋 複製 Discord 文字</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 引用外部 JavaScript (模組化) -->
+  <script type="module" src="app.js"></script>
+</body>
+</html>
