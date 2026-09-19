@@ -1239,8 +1239,7 @@
     };
 
     render();
-  </script>
-  // ==================== 新增 / 刪除 列 (Item) ====================
+ // ==================== 新增 / 刪除 列 (Item) ====================
 
 // 1. ➕ 新增列 (物品)
 const addItemBtn = document.getElementById("add-item-btn");
@@ -1252,7 +1251,6 @@ if (addItemBtn) {
     const name = prompt(`請輸入新物品 (ID #${nextId}) 的名稱：`, `物品 #${nextId}`);
     if (!name) return;
 
-    // 建立新資料
     itemsData[`item_${nextId}`] = {
       id: nextId,
       name: name.trim(),
@@ -1326,7 +1324,6 @@ if (delColBtn) {
 
     if (!isNaN(index) && index >= 0 && index < customColumns.length) {
       const removedCol = customColumns.splice(index, 1)[0];
-      // 清除各項物品內的該欄位資料
       Object.keys(itemsData).forEach(k => {
         if (itemsData[k].extraFields) delete itemsData[k].extraFields[removedCol.key];
       });
@@ -1349,5 +1346,3 @@ syncToCloud = async function() {
     console.error("同步失敗：", e);
   }
 };
-</body>
-</html>
