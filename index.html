@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roblox Throw a Coin — Collection Index Tracker</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --header-bg: #0f172a;
+      --table-header-bg: #1e293b;
+      --border-color: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+      --success-bg: rgba(16, 185, 129, 0.15);
+      --success-text: #34d399;
+      --success-border: #10b981;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      margin: 0;
+      padding: 24px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    /* =========================================================
+        ✨ 華麗頂部標題與頭像動畫特效 (Glorious Header Effects)
+    ========================================================= */
+    .title-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* 華麗頭像外框特效 */
+    .avatar-wrapper {
+      position: relative;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      padding: 3px;
+      background: linear-gradient(135deg, #818cf8, #c084fc, #f43f5e, #fde047, #38bdf8);
+      background-size: 300% 300%;
+      animation: avatarGradient 4s linear infinite, avatarGlow 2.5s ease-in-out infinite alternate;
+      flex-shrink: 0;
+    }
+
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      background-color: #0f172a;
+      display: block;
+    }
+
+    @keyframes avatarGradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes avatarGlow {
+      0% {
+        box-shadow: 0 0 8px rgba(129, 140, 248, 0.6), 0 0 15px rgba(192, 132, 252, 0.4);
+        transform: scale(1);
+      }
+      100% {
+        box-shadow: 0 0 18px rgba(244, 63, 94, 0.8), 0 0 28px rgba(56, 189, 248, 0.6);
+        transform: scale(1.04);
+      }
+    }
+
+    /* 多重霓光標題 */
+    .title-group h1 {
+      margin: 0;
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      
+      background: linear-gradient(
+        120deg, 
+        #818cf8 0%, 
+        #c084fc 25%, 
+        #f43f5e 50%, 
+        #fde047 75%, 
+        #38bdf8 100%
+      );
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      
+      animation: titleGradientFlow 6s ease infinite, titleGlowPulse 2.5s ease-in-out infinite alternate;
+      position: relative;
+      display: inline-block;
+    }
+
+    @keyframes titleGradientFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes titleGlowPulse {
+      0% {
+        filter: drop-shadow(0 0 5px rgba(129, 140, 248, 0.4)) 
+                drop-shadow(0 0 12px rgba(192, 132, 252, 0.3));
+      }
+      100% {
+        filter: drop-shadow(0 0 12px rgba(244, 63, 94, 0.7)) 
+                drop-shadow(0 0 25px rgba(56, 189, 248, 0.6))
+                drop-shadow(0 0 35px rgba(253, 224, 71, 0.4));
+      }
+    }
+
+    .auth-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--card-bg);
+      padding: 8px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .auth-status {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .btn {
+      background-color: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn:hover { background-color: var(--accent-hover); }
+    .btn-secondary { background-color: #334155; }
+    .btn-secondary:hover { background-color: #475569; }
+    .btn-warning { background-color: #eab308; color: #0f172a; }
+    .btn-warning:hover { background-color: #ca8a04; }
+    .btn-danger { background-color: #ef4444; }
+    .btn-danger:hover { background-color: #dc2626; }
+    .btn-success { background-color: #10b981; color: #fff; }
+    .btn-success:hover { background-color: #059669; }
+
+    /* Roblox 按鈕特別樣式 */
+    .btn-roblox {
+      background: linear-gradient(135deg, #00a2ff, #0066ff);
+      color: #fff;
+    }
+    .btn-roblox:hover {
+      background: linear-gradient(135deg, #0088cc, #0044cc);
+      box-shadow: 0 0 12px rgba(0, 162, 255, 0.5);
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px 20px;
+    }
+
+    .stat-title {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-input {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+      flex: 1;
+      min-width: 200px;
+    }
+    .search-input:focus { border-color: var(--accent); }
+
+    .view-toggle-container {
+      display: flex;
+      gap: 6px;
+      background: var(--card-bg);
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+    }
+
+    .view-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .view-btn.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    /* 管理員專屬元素隱藏與控制 */
+    .admin-only {
+      display: none;
+    }
+
+    body:not(.read-only) .admin-only {
+      display: inline-flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      max-height: 75vh;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      text-align: left;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      background-color: #1e293b;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-color);
+      z-index: 10;
+    }
+
+    td {
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.95rem;
+      color: var(--text-main);
+      vertical-align: middle;
+    }
+
+    tr:hover td {
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    .item-img-container {
+      width: 72px;
+      height: 72px;
+      border-radius: 10px;
+      background: #0f172a;
+      border: 1px dashed var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .item-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .item-img-container:hover .item-img {
+      transform: scale(1.4);
+      z-index: 20;
+    }
+
+    .img-placeholder {
+      font-size: 0.8rem;
+      color: #475569;
+      text-align: center;
+    }
+
+    body:not(.read-only) .editable-cell:hover {
+      background-color: rgba(99, 102, 241, 0.15);
+      cursor: pointer;
+    }
+
+    /* === 稀有度通用標籤 === */
+    .rarity-tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      text-transform: capitalize;
+    }
+
+    /* === 全稀有度專屬顏色設定 === */
+    .rarity-common { color: #9e9e9e; background: rgba(158, 158, 158, 0.15); border: 1px solid #616161; }
+    .rarity-uncommon { color: #4caf50; background: rgba(76, 175, 80, 0.15); border: 1px solid #388e3c; }
+    .rarity-rare { color: #2196f3; background: rgba(33, 150, 243, 0.15); border: 1px solid #1976d2; }
+    .rarity-epic { color: #ab47bc; background: rgba(171, 71, 188, 0.15); border: 1px solid #7b1fa2; }
+    .rarity-legendary { color: #ffa726; background: rgba(255, 167, 38, 0.15); border: 1px solid #f57c00; }
+    .rarity-mythic, .rarity-mythical { color: #ef5350; background: rgba(239, 83, 80, 0.15); border: 1px solid #d32f2f; }
+    .rarity-mythic\+ { color: #ff1744; background: rgba(255, 23, 68, 0.2); border: 1px solid #d50000; box-shadow: 0 0 6px rgba(255, 23, 68, 0.4); }
+    .rarity-cosmic { color: #26c6da; background: rgba(38, 198, 218, 0.15); border: 1px solid #0097a7; }
+    .rarity-celestial { color: #ec407a; background: rgba(236, 64, 122, 0.15); border: 1px solid #c2185b; }
+    .rarity-chronal { color: #00bcd4; background: rgba(0, 188, 212, 0.15); border: 1px solid #0097a7; }
+    .rarity-carved { color: #8d6e63; background: rgba(141, 110, 99, 0.15); border: 1px solid #5d4037; }
+    .rarity-honed { color: #78909c; background: rgba(120, 144, 156, 0.15); border: 1px solid #455a64; }
+    .rarity-tempered { color: #26a69a; background: rgba(38, 166, 154, 0.15); border: 1px solid #00796b; }
+    .rarity-yokai { color: #3b82f6; background: rgba(59, 130, 246, 0.15); border: 1px solid #1d4ed8; }
+    .rarity-veiled { color: #a855f7; background: rgba(168, 85, 247, 0.15); border: 1px solid #6b21a8; }
+    .rarity-hallowed { color: #ec4899; background: rgba(236, 72, 153, 0.15); border: 1px solid #be185d; }
+    .rarity-imperial { color: #f59e0b; background: rgba(245, 158, 11, 0.2); border: 1px solid #d97706; box-shadow: 0 0 8px rgba(245, 158, 11, 0.3); }
+
+    .rarity-godly, .rarity-godlike { color: #ffd700; background: rgba(255, 215, 0, 0.25); border: 1px solid #ffaa00; box-shadow: 0 0 10px rgba(255, 215, 0, 0.4); }
+    .rarity-eternal { color: #10b981; background: rgba(16, 185, 129, 0.2); border: 1px solid #059669; }
+    .rarity-otherversal { color: #3b82f6; background: rgba(59, 130, 246, 0.2); border: 1px solid #1d4ed8; }
+    .rarity-genesis { color: #38bdf8; background: rgba(56, 189, 248, 0.2); border: 1px solid #0284c7; }
+    .rarity-zenith { color: #f43f5e; background: rgba(244, 63, 94, 0.2); border: 1px solid #e11d48; }
+    .rarity-solar { color: #f97316; background: rgba(249, 115, 22, 0.2); border: 1px solid #ea580c; }
+    .rarity-radiant { color: #fef08a; background: rgba(254, 240, 138, 0.25); border: 1px solid #eab308; }
+    .rarity-elysian { color: #a7f3d0; background: rgba(167, 243, 208, 0.2); border: 1px solid #10b981; }
+    .rarity-hyperion { color: #fbbf24; background: rgba(251, 191, 36, 0.2); border: 1px solid #d97706; }
+    .rarity-angelic { color: #e0f2fe; background: rgba(224, 242, 254, 0.2); border: 1px solid #38bdf8; }
+    .rarity-aurelian { color: #fde047; background: rgba(253, 224, 71, 0.2); border: 1px solid #ca8a04; }
+    .rarity-olympian { color: #fb923c; background: rgba(251, 146, 60, 0.2); border: 1px solid #c2410c; }
+    .rarity-promethean { color: #ef4444; background: rgba(239, 68, 68, 0.2); border: 1px solid #b91c1c; }
+    .rarity-chaos { color: #c084fc; background: rgba(192, 132, 252, 0.2); border: 1px solid #7e22ce; }
+    .rarity-arcane { color: #818cf8; background: rgba(129, 140, 248, 0.2); border: 1px solid #4338ca; }
+    .rarity-runic { color: #2dd4bf; background: rgba(45, 212, 191, 0.2); border: 1px solid #0f766e; }
+    .rarity-mystic { color: #a855f7; background: rgba(168, 85, 247, 0.2); border: 1px solid #7e22ce; }
+    .rarity-infernal { color: #dc2626; background: rgba(220, 38, 38, 0.25); border: 1px solid #991b1b; }
+    .rarity-fey { color: #4ade80; background: rgba(74, 222, 128, 0.2); border: 1px solid #15803d; }
+    .rarity-draconic { color: #b91c1c; background: rgba(185, 28, 28, 0.25); border: 1px solid #7f1d1d; }
+    .rarity-fabled { color: #f472b6; background: rgba(244, 114, 182, 0.2); border: 1px solid #be185d; }
+    .rarity-awakened { color: #38bdf8; background: rgba(56, 189, 248, 0.2); border: 1px solid #0369a1; }
+    .rarity-unbound { color: #e879f9; background: rgba(232, 121, 249, 0.2); border: 1px solid #a21caf; }
+    .rarity-kinetic { color: #facc15; background: rgba(250, 204, 21, 0.2); border: 1px solid #854d0e; }
+    .rarity-forged { color: #fb923c; background: rgba(251, 146, 60, 0.2); border: 1px solid #9a3412; }
+    .rarity-gilded { color: #fef08a; background: rgba(254, 240, 138, 0.25); border: 1px solid #ca8a04; }
+    .rarity-victorian { color: #a3e635; background: rgba(163, 230, 53, 0.15); border: 1px solid #4d7c0f; }
+    .rarity-regal { color: #e879f9; background: rgba(232, 121, 249, 0.2); border: 1px solid #86198f; }
+    .rarity-epochal { color: #94a3b8; background: rgba(148, 163, 184, 0.2); border: 1px solid #475569; }
+    .rarity-impossible { color: #ff0055; background: rgba(255, 0, 85, 0.25); border: 1px solid #990033; box-shadow: 0 0 8px rgba(255, 0, 85, 0.5); }
+    .rarity-perpetual { color: #34d399; background: rgba(52, 211, 153, 0.2); border: 1px solid #065f46; }
+    .rarity-colossal { color: #fbbf24; background: rgba(251, 191, 36, 0.2); border: 1px solid #b45309; }
+    .rarity-deus { color: #ffffff; background: rgba(255, 255, 255, 0.25); border: 1px solid #ffffff; box-shadow: 0 0 10px rgba(255, 255, 255, 0.6); }
+
+    .status-cell {
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .badge-empty { color: #475569; }
+
+    .badge-collected {
+      background-color: var(--success-bg);
+      color: var(--success-text);
+      border: 1px solid var(--success-border);
+    }
+
+    .count-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .count-btn {
+      background: #334155;
+      color: #fff;
+      border: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: none;
+      font-weight: bold;
+      line-height: 1;
+    }
+
+    body:not(.read-only) .count-box:hover .count-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    body.read-only .status-cell,
+    body.read-only .count-box,
+    body.read-only .editable-cell {
+      pointer-events: none;
+    }
+
+    /* =========================================================
+        🎴 卡牌相簿模式 (Card Gallery View) 與特效
+    ========================================================= */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+      gap: 18px;
+      padding: 4px 0;
+    }
+
+    .item-card {
+      position: relative;
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .item-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .item-card.locked {
+      opacity: 0.6;
+      background: #0d1322;
+      border-color: #1e293b;
+    }
+
+    .item-card.locked .card-img {
+      filter: brightness(0) drop-shadow(0 0 2px rgba(255, 255, 255, 0.2));
+    }
+
+    .lock-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 32px;
+      pointer-events: none;
+      z-index: 5;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.9));
+    }
+
+    .card-img-wrapper {
+      position: relative;
+      width: 100%;
+      height: 105px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0f172a;
+      border-radius: 8px;
+      margin: 8px 0;
+      overflow: hidden;
+    }
+
+    .card-img {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+      transition: filter 0.3s ease;
+    }
+
+    /* --- 解鎖稀有度動態特效 --- */
+    .item-card.unlocked.fx-godly,
+    .item-card.unlocked.fx-godlike,
+    .item-card.unlocked.fx-deus,
+    .item-card.unlocked.fx-imperial {
+      border-color: #ffd700;
+      background: linear-gradient(145deg, #1e293b 0%, #3a2202 100%);
+      box-shadow: 0 0 18px rgba(255, 215, 0, 0.7);
+      animation: fxGodlyGlow 2.5s infinite alternate;
+    }
+    @keyframes fxGodlyGlow {
+      0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.4); }
+      100% { box-shadow: 0 0 26px rgba(255, 215, 0, 0.9), 0 0 10px rgba(255, 255, 255, 0.8); }
+    }
+
+    .item-card.unlocked.fx-zenith,
+    .item-card.unlocked.fx-impossible,
+    .item-card.unlocked.fx-mythic\+ {
+      border-color: #ff0055;
+      background: linear-gradient(145deg, #1e293b 0%, #3b0014 100%);
+      box-shadow: 0 0 16px rgba(255, 0, 85, 0.7);
+      animation: fxRedPulse 2s infinite alternate;
+    }
+    @keyframes fxRedPulse {
+      0% { box-shadow: 0 0 8px rgba(255, 0, 85, 0.4); }
+      100% { box-shadow: 0 0 22px rgba(255, 23, 68, 0.9); }
+    }
+
+    .item-card.unlocked.fx-eternal,
+    .item-card.unlocked.fx-elysian,
+    .item-card.unlocked.fx-perpetual {
+      border-color: #10b981;
+      background: linear-gradient(145deg, #1e293b 0%, #022c22 100%);
+      box-shadow: 0 0 14px rgba(16, 185, 129, 0.6);
+    }
+
+    .item-card.unlocked.fx-otherversal,
+    .item-card.unlocked.fx-genesis,
+    .item-card.unlocked.fx-awakened,
+    .item-card.unlocked.fx-cosmic {
+      border-color: #38bdf8;
+      background: linear-gradient(145deg, #1e293b 0%, #032d42 100%);
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.6);
+    }
+
+    .item-card.unlocked.fx-chaos,
+    .item-card.unlocked.fx-unbound,
+    .item-card.unlocked.fx-mystic,
+    .item-card.unlocked.fx-void {
+      border-color: #c084fc;
+      background: radial-gradient(circle, #2d0a3d 0%, #1e293b 100%);
+      box-shadow: 0 0 16px rgba(192, 132, 252, 0.6);
+      animation: fxPurpleGlow 2s infinite alternate;
+    }
+    @keyframes fxPurpleGlow {
+      0% { box-shadow: 0 0 8px rgba(192, 132, 252, 0.4); }
+      100% { box-shadow: 0 0 22px rgba(232, 121, 249, 0.8); }
+    }
+
+    .item-card.unlocked.fx-solar,
+    .item-card.unlocked.fx-promethean,
+    .item-card.unlocked.fx-infernal,
+    .item-card.unlocked.fx-draconic {
+      border-color: #f97316;
+      background: linear-gradient(145deg, #1e293b 0%, #3d1302 100%);
+      box-shadow: 0 0 14px rgba(249, 115, 22, 0.6);
+    }
+
+    .card-id {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      align-self: flex-start;
+      font-weight: 700;
+    }
+
+    .card-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 2px 0;
+      width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-badges {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 6px;
+    }
+
+    .card-badge-item {
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      background: #334155;
+      color: #94a3b8;
+    }
+
+    .card-badge-item.active-astral { background: rgba(99, 102, 241, 0.25); color: #818cf8; border: 1px solid #6366f1; }
+    .card-badge-item.active-divine { background: rgba(234, 179, 8, 0.25); color: #fde047; border: 1px solid #eab308; }
+    .card-badge-item.active-void { background: rgba(168, 85, 247, 0.25); color: #c084fc; border: 1px solid #a855f7; }
+
+    /* =========================================================
+        🤝 交易助手 (Trading Helper) 彈窗與面板樣式
+    ========================================================= */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease-in-out;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .trade-modal {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      width: 90%;
+      max-width: 650px;
+      padding: 24px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      color: var(--text-main);
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .trade-textarea {
+      width: 100%;
+      height: 220px;
+      background: #0f172a;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: #38bdf8;
+      font-family: monospace;
+      padding: 12px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+      margin-bottom: 16px;
+    }
+
+    .trade-textarea:focus {
+      border-color: var(--accent);
+    }
+  </style>
+</head>
+<body class="read-only">
+
+  <header>
+    <div class="title-group">
+      <!-- 華麗光暈頭像區塊 -->
+      <div class="avatar-wrapper">
+        <img src="https://i.ibb.co/vv6Dd3qw/test22.png" alt="Avatar" class="avatar-img">
+      </div>
+      <h1>新竹九降風清水疾風俠 Roblox Throw a Coin — Collection Index Tracker</h1>
+    </div>
+    <div class="auth-box">
+      <!-- 🎮 Roblox 聯絡方式：點擊跳轉個人主頁 -->
+      <a href="https://www.roblox.com/users/10053396167/profile" target="_blank" rel="noopener noreferrer" class="btn btn-roblox" title="前往我的 Roblox 個人主頁">
+        🎮 Roblox
+      </a>
+      
+      <!-- 📋 點擊快速複製 Username -->
+      <button class="btn btn-secondary" onclick="copyRobloxID()" title="點擊複製 Roblox 帳號">
+        📋 複製 ID
+      </button>
+
+      <!-- 🤝 交易助手設為 admin-only，管理員登入後才顯示 -->
+      <button id="trade-btn" class="btn btn-success admin-only">🤝 交易助手</button>
+      <span id="auth-status" class="auth-status">當前狀態：瀏覽模式 (唯讀)</span>
+      <button id="auth-btn" class="btn">管理員登入</button>
+    </div>
+  </header>
+
+  <script>
+    function copyRobloxID() {
+      const robloxUsername = "1876441"; 
+      navigator.clipboard.writeText(robloxUsername).then(() => {
+        alert("已複製 Roblox 帳號：" + robloxUsername);
+      }).catch(err => {
+        console.error("複製失敗：", err);
+      });
+    }
+  </script>
+
+  <div class="dashboard">
+    <div class="stat-card">
+      <div class="stat-title">Astral 收集進度</div>
+      <div id="stat-astral" class="stat-value">0 / 188 (0%)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Divine 收集進度</div>
+      <div id="stat-divine" class="stat-value">0 / 188 (0%)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Void 收集進度</div>
+      <div id="stat-void" class="stat-value">0 / 188 (0%)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Astral 總數量</div>
+      <div id="stat-count-total" class="stat-value">0</div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <input type="text" id="search-input" class="search-input" placeholder="搜尋物品名稱或編號 (登入後雙擊名稱/圖片/稀有度可編輯)...">
+    
+    <div class="view-toggle-container">
+      <button id="btn-view-table" class="view-btn active">📊 表格</button>
+      <button id="btn-view-card" class="view-btn">🎴 卡牌相簿</button>
+    </div>
+
+    <div class="admin-only">
+      <button id="add-item-btn" class="btn btn-success">➕ 新增物品 (列)</button>
+      <button id="delete-item-btn" class="btn btn-danger">🗑️ 刪除最後一列</button>
+      <button id="add-col-btn" class="btn btn-warning">➕ 新增欄位 (欄)</button>
+      <button id="del-col-btn" class="btn btn-danger">🗑️ 刪除自訂欄位</button>
+      <button id="export-csv-btn" class="btn btn-secondary">📥 匯出 CSV</button>
+      <button id="export-json-btn" class="btn btn-secondary">💾 備份 JSON</button>
+      <button id="import-btn" class="btn btn-warning">📤 匯入 JSON 備份</button>
+      <input type="file" id="import-file-input" accept=".json" style="display: none;">
+    </div>
+  </div>
+
+  <!-- 表格檢視區域 -->
+  <div id="table-view-container" class="table-container">
+    <table>
+      <thead>
+        <tr id="table-header-row">
+          <th style="width: 70px;">編號</th>
+          <th style="width: 140px;">物品名稱</th>
+          <th style="width: 100px; text-align: left; padding-left: 10px;">圖片</th>
+          <th style="width: 130px;">稀有度</th>
+          <th style="width: 120px; text-align: center;">ASTRAL</th>
+          <th style="width: 130px; text-align: center;">ASTRAL COUNT</th>
+          <th style="width: 120px; text-align: center;">DIVINE</th>
+          <th style="width: 120px; text-align: center;">VOID</th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 卡牌相簿區域 -->
+  <div id="card-view-container" class="card-grid" style="display: none;">
+  </div>
+
+  <!-- 🤝 交易助手 Modal 面板 -->
+  <div id="trade-modal-overlay" class="modal-overlay">
+    <div class="trade-modal">
+      <div class="modal-header">
+        <h2>🤝 Discord 交易格式產生器</h2>
+        <button id="modal-close-btn" class="modal-close">&times;</button>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
+        自動依據您的圖鑑生成 Discord 交易頻道的專屬格式：
+      </p>
+      <textarea id="trade-text-output" class="trade-textarea" readonly></textarea>
+      <div style="display: flex; justify-content: flex-end; gap: 12px;">
+        <button id="copy-trade-btn" class="btn btn-success">📋 複製 Discord 文字</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBh4wNEwXzGOxKOJqj3Akg7gj1WxFHzmNQ",
+      authDomain: "throw-a-coin.firebaseapp.com",
+      projectId: "throw-a-coin",
+      storageBucket: "throw-a-coin.firebasestorage.app",
+      messagingSenderId: "79225369395",
+      appId: "1:79225369395:web:ac6b6dadb1154159c40446",
+      measurementId: "G-B84NLZX6Z8"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // 全域自訂欄位
+    let customColumns = [];
+
+    const defaultDatabase = {
+      163: { name: "Nautilus", rarity: "Chronal" },
+      164: { name: "Training Dummy", rarity: "Carved" },
+      165: { name: "Golden Fan", rarity: "Carved" },
+      166: { name: "Bonsai Tree", rarity: "Carved" },
+      167: { name: "Lucky Medallion", rarity: "Carved" },
+      168: { name: "War Drum", rarity: "Honed" },
+      169: { name: "Shuriken", rarity: "Honed" },
+      170: { name: "Stone Lantern", rarity: "Honed" },
+      171: { name: "Katana", rarity: "Tempered" },
+      172: { name: "Emperor Crown", rarity: "Tempered" },
+      173: { name: "Sacred Vase", rarity: "Tempered" },
+      174: { name: "Oni Mask", rarity: "Yokai" },
+      175: { name: "Oni Hammer", rarity: "Yokai" },
+      176: { name: "Torii Gate", rarity: "Veiled" },
+      177: { name: "Imperial Throne", rarity: "Veiled" },
+      178: { name: "Dojo", rarity: "Hallowed" },
+      179: { name: "Great Pagoda", rarity: "Hallowed" },
+      180: { name: "Dragon Temple", rarity: "Imperial" },
+      181: { name: "Imperial Seal", rarity: "Imperial" }
+    };
+
+    const TOTAL_ITEMS = 188;
+    let itemsData = {};
+
+    for (let i = 1; i <= TOTAL_ITEMS; i++) {
+      const preset = defaultDatabase[i] || {};
+      itemsData[`item_${i}`] = {
+        id: i,
+        name: preset.name || `物品 #${i}`,
+        rarity: preset.rarity || `Common`,
+        imageUrl: "",
+        astral: false,
+        astralCount: 0,
+        divine: false,
+        void: false,
+        extraFields: {}
+      };
+    }
+
+    const tbody = document.getElementById("table-body");
+    const cardContainer = document.getElementById("card-view-container");
+    const tableViewContainer = document.getElementById("table-view-container");
+    const authBtn = document.getElementById("auth-btn");
+    const authStatus = document.getElementById("auth-status");
+    const searchInput = document.getElementById("search-input");
+    const importBtn = document.getElementById("import-btn");
+    const importFileInput = document.getElementById("import-file-input");
+    const btnViewTable = document.getElementById("btn-view-table");
+    const btnViewCard = document.getElementById("btn-view-card");
+
+    // 交易助手 DOM
+    const tradeBtn = document.getElementById("trade-btn");
+    const tradeOverlay = document.getElementById("trade-modal-overlay");
+    const closeModalBtn = document.getElementById("modal-close-btn");
+    const tradeTextOutput = document.getElementById("trade-text-output");
+    const copyTradeBtn = document.getElementById("copy-trade-btn");
+
+    function renderHeader() {
+      const headerRow = document.getElementById("table-header-row");
+      headerRow.innerHTML = `
+        <th style="width: 70px;">編號</th>
+        <th style="width: 140px;">物品名稱</th>
+        <th style="width: 100px; text-align: left; padding-left: 10px;">圖片</th>
+        <th style="width: 130px;">稀有度</th>
+        <th style="width: 120px; text-align: center;">ASTRAL</th>
+        <th style="width: 130px; text-align: center;">ASTRAL COUNT</th>
+        <th style="width: 120px; text-align: center;">DIVINE</th>
+        <th style="width: 120px; text-align: center;">VOID</th>
+      `;
+      
+      customColumns.forEach(col => {
+        const th = document.createElement("th");
+        th.style.textAlign = "center";
+        th.style.width = "120px";
+        th.innerText = col.name.toUpperCase();
+        headerRow.appendChild(th);
+      });
+    }
+
+    function render() {
+      renderHeader();
+      const query = searchInput.value.toLowerCase().trim();
+      tbody.innerHTML = "";
+      cardContainer.innerHTML = "";
+
+      let astralCountSum = 0;
+      let astralCollected = 0;
+      let divineCollected = 0;
+      let voidCollected = 0;
+
+      const sortedKeys = Object.keys(itemsData).sort((a, b) => itemsData[a].id - itemsData[b].id);
+
+      sortedKeys.forEach(key => {
+        const item = itemsData[key];
+
+        if (item.astral) astralCollected++;
+        if (item.divine) divineCollected++;
+        if (item.void) voidCollected++;
+        astralCountSum += (item.astralCount || 0);
+
+        const matchSearch = item.name.toLowerCase().includes(query) || String(item.id).includes(query);
+        if (!matchSearch) return;
+
+        const safeRarityName = item.rarity ? item.rarity.toLowerCase().replace(/[^a-z0-9]/g, '') : 'common';
+        const rarityClass = `rarity-${safeRarityName}`;
+        const isUnlocked = item.astral || item.divine || item.void || (item.astralCount > 0);
+
+        // 1. 渲染表格列
+        const tr = document.createElement("tr");
+        let extraTdHTML = "";
+        
+        customColumns.forEach(col => {
+          if (!item.extraFields) item.extraFields = {};
+          if (col.type === "boolean") {
+            const val = item.extraFields[col.key] || false;
+            extraTdHTML += `
+              <td class="status-cell" onclick="toggleExtraField('${key}', '${col.key}', 'boolean')">
+                <span class="badge ${val ? 'badge-collected' : 'badge-empty'}">${val ? '✓ 已收集' : '-'}</span>
+              </td>
+            `;
+          } else {
+            const val = item.extraFields[col.key] || 0;
+            extraTdHTML += `
+              <td class="status-cell">
+                <div class="count-box">
+                  <button class="count-btn" onclick="adjustExtraCount(event, '${key}', '${col.key}', -1)">-</button>
+                  <span onclick="editExtraCountDirect('${key}', '${col.key}')" style="min-width: 24px; text-align: center;">${val}</span>
+                  <button class="count-btn" onclick="adjustExtraCount(event, '${key}', '${col.key}', 1)">+</button>
+                </div>
+              </td>
+            `;
+          }
+        });
+
+        tr.innerHTML = `
+          <td><strong>#${item.id}</strong></td>
+          <td class="editable-cell" ondblclick="editField('${key}', 'name')" title="登入後雙擊修改名稱"><strong>${item.name}</strong></td>
+          <td class="editable-cell" style="text-align: left; padding-left: 10px;" ondblclick="editField('${key}', 'imageUrl')" title="登入後雙擊設定圖片網址">
+            <div class="item-img-container">
+              ${item.imageUrl ? `<img src="${item.imageUrl}" class="item-img" alt="${item.name}">` : `<span class="img-placeholder">+圖片</span>`}
+            </div>
+          </td>
+          <td class="editable-cell" ondblclick="editField('${key}', 'rarity')" title="登入後雙擊修改稀有度">
+            <span class="rarity-tag ${rarityClass}">${item.rarity}</span>
+          </td>
+          <td class="status-cell" onclick="toggleStatus('${key}', 'astral')">
+            <span class="badge ${item.astral ? 'badge-collected' : 'badge-empty'}">${item.astral ? '✓ 已收集' : '-'}</span>
+          </td>
+          <td class="status-cell">
+            <div class="count-box">
+              <button class="count-btn" onclick="adjustCount(event, '${key}', -1)">-</button>
+              <span onclick="editCountDirect('${key}')" style="min-width: 24px; text-align: center;">${item.astralCount || 0}</span>
+              <button class="count-btn" onclick="adjustCount(event, '${key}', 1)">+</button>
+            </div>
+          </td>
+          <td class="status-cell" onclick="toggleStatus('${key}', 'divine')">
+            <span class="badge ${item.divine ? 'badge-collected' : 'badge-empty'}">${item.divine ? '✓ 已收集' : '-'}</span>
+          </td>
+          <td class="status-cell" onclick="toggleStatus('${key}', 'void')">
+            <span class="badge ${item.void ? 'badge-collected' : 'badge-empty'}">${item.void ? '✓ 已收集' : '-'}</span>
+          </td>
+          ${extraTdHTML}
+        `;
+        tbody.appendChild(tr);
+
+        // 2. 渲染卡牌相簿
+        const card = document.createElement("div");
+        card.className = `item-card ${isUnlocked ? 'unlocked fx-' + safeRarityName : 'locked'}`;
+        card.innerHTML = `
+          ${!isUnlocked ? `<div class="lock-icon">🔒</div>` : ''}
+          <div class="card-id">#${item.id}</div>
+          <div class="card-img-wrapper">
+            ${item.imageUrl ? `<img src="${item.imageUrl}" class="card-img" alt="${item.name}">` : `<span class="img-placeholder" style="font-size:2rem;">❓</span>`}
+          </div>
+          <div class="card-title">${item.name}</div>
+          <div><span class="rarity-tag ${rarityClass}">${item.rarity}</span></div>
+          <div class="card-badges">
+            <span class="card-badge-item ${item.astral ? 'active-astral' : ''}">Astral: ${item.astral ? '✓' : '-'} (${item.astralCount || 0})</span>
+            <span class="card-badge-item ${item.divine ? 'active-divine' : ''}">Divine: ${item.divine ? '✓' : '-'}</span>
+            <span class="card-badge-item ${item.void ? 'active-void' : ''}">Void: ${item.void ? '✓' : '-'}</span>
+          </div>
+        `;
+        cardContainer.appendChild(card);
+      });
+
+      // 更新儀表板數據
+      const totalCount = sortedKeys.length;
+      document.getElementById("stat-astral").innerText = `${astralCollected} / ${totalCount} (${Math.round((astralCollected / totalCount) * 100 || 0)}%)`;
+      document.getElementById("stat-divine").innerText = `${divineCollected} / ${totalCount} (${Math.round((divineCollected / totalCount) * 100 || 0)}%)`;
+      document.getElementById("stat-void").innerText = `${voidCollected} / ${totalCount} (${Math.round((voidCollected / totalCount) * 100 || 0)}%)`;
+      document.getElementById("stat-count-total").innerText = astralCountSum;
+    }
+
+    // 狀態開關與修改功能繫結至全域
+    window.toggleStatus = async (key, field) => {
+      if (!auth.currentUser) return;
+      itemsData[key][field] = !itemsData[key][field];
+      render();
+      await syncToCloud();
+    };
+
+    window.adjustCount = async (e, key, delta) => {
+      e.stopPropagation();
+      if (!auth.currentUser) return;
+      const current = itemsData[key].astralCount || 0;
+      itemsData[key].astralCount = Math.max(0, current + delta);
+      render();
+      await syncToCloud();
+    };
+
+    window.editCountDirect = async (key) => {
+      if (!auth.currentUser) return;
+      const input = prompt("請輸入 Astral Count 數量：", itemsData[key].astralCount || 0);
+      if (input !== null) {
+        const val = parseInt(input, 10);
+        if (!isNaN(val) && val >= 0) {
+          itemsData[key].astralCount = val;
+          render();
+          await syncToCloud();
+        }
+      }
+    };
+
+    window.editField = async (key, field) => {
+      if (!auth.currentUser) return;
+      const oldVal = itemsData[key][field] || "";
+      const newVal = prompt(`修改 ${field}:`, oldVal);
+      if (newVal !== null) {
+        itemsData[key][field] = newVal.trim();
+        render();
+        await syncToCloud();
+      }
+    };
+
+    window.toggleExtraField = async (key, colKey, type) => {
+      if (!auth.currentUser) return;
+      if (!itemsData[key].extraFields) itemsData[key].extraFields = {};
+      itemsData[key].extraFields[colKey] = !itemsData[key].extraFields[colKey];
+      render();
+      await syncToCloud();
+    };
+
+    window.adjustExtraCount = async (e, key, colKey, delta) => {
+      e.stopPropagation();
+      if (!auth.currentUser) return;
+      if (!itemsData[key].extraFields) itemsData[key].extraFields = {};
+      const current = itemsData[key].extraFields[colKey] || 0;
+      itemsData[key].extraFields[colKey] = Math.max(0, current + delta);
+      render();
+      await syncToCloud();
+    };
+
+    window.editExtraCountDirect = async (key, colKey) => {
+      if (!auth.currentUser) return;
+      if (!itemsData[key].extraFields) itemsData[key].extraFields = {};
+      const input = prompt("請輸入數量：", itemsData[key].extraFields[colKey] || 0);
+      if (input !== null) {
+        const val = parseInt(input, 10);
+        if (!isNaN(val) && val >= 0) {
+          itemsData[key].extraFields[colKey] = val;
+          render();
+          await syncToCloud();
+        }
+      }
+    };
+
+    async function syncToCloud() {
+      try {
+        await setDoc(doc(db, "tracker", "progress"), { 
+          items: itemsData,
+          customColumns: customColumns 
+        }, { merge: true });
+      } catch (e) {
+        console.error("同步至 Firebase 失敗：", e);
+      }
+    }
+
+    // 監聽 Firebase 雲端即時資料變更
+    onSnapshot(doc(db, "tracker", "progress"), (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (data.items) itemsData = data.items;
+        if (data.customColumns) customColumns = data.customColumns;
+        render();
+      }
+    });
+
+    // 登入狀態監聽
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        document.body.classList.remove("read-only");
+        authStatus.innerText = "當前狀態：管理員模式";
+        authBtn.innerText = "登出";
+      } else {
+        document.body.classList.add("read-only");
+        authStatus.innerText = "當前狀態：瀏覽模式 (唯讀)";
+        authBtn.innerText = "管理員登入";
+      }
+    });
+
+    authBtn.onclick = async () => {
+      if (auth.currentUser) {
+        await signOut(auth);
+      } else {
+        const email = prompt("請輸入管理員 Email：");
+        const password = prompt("請輸入密碼：");
+        if (email && password) {
+          try {
+            await signInWithEmailAndPassword(auth, email, password);
+          } catch (e) {
+            alert("登入失敗：" + e.message);
+          }
+        }
+      }
+    };
+
+    // 切換頁籤
+    btnViewTable.onclick = () => {
+      btnViewTable.classList.add("active");
+      btnViewCard.classList.remove("active");
+      tableViewContainer.style.display = "block";
+      cardContainer.style.display = "none";
+    };
+
+    btnViewCard.onclick = () => {
+      btnViewCard.classList.add("active");
+      btnViewTable.classList.remove("active");
+      cardContainer.style.display = "grid";
+      tableViewContainer.style.display = "none";
+    };
+
+    searchInput.oninput = () => render();
+
+    // 交易助手 Modal 開關
+    tradeBtn.onclick = () => {
+      let output = "【Throw a Coin - 收集圖鑑清單】\n";
+      output += "-----------------------------\n";
+      Object.keys(itemsData).forEach(k => {
+        const item = itemsData[k];
+        if (item.astral || item.divine || item.void || item.astralCount > 0) {
+          output += `#${item.id} ${item.name} (${item.rarity}): `;
+          let tags = [];
+          if (item.astral) tags.push(`Astral x${item.astralCount || 1}`);
+          if (item.divine) tags.push("Divine");
+          if (item.void) tags.push("Void");
+          output += tags.join(", ") + "\n";
+        }
+      });
+      tradeTextOutput.value = output;
+      tradeOverlay.classList.add("active");
+    };
+
+    closeModalBtn.onclick = () => tradeOverlay.classList.remove("active");
+    copyTradeBtn.onclick = () => {
+      navigator.clipboard.writeText(tradeTextOutput.value);
+      alert("交易格式文字已複製！");
+    };
+
+    // CSV 匯出
+    document.getElementById("export-csv-btn").onclick = () => {
+      let csvStr = "\uFEFFID,Name,Rarity,Astral,AstralCount,Divine,Void\n";
+      Object.keys(itemsData).forEach(k => {
+        const item = itemsData[k];
+        csvStr += `${item.id},"${item.name}","${item.rarity}",${item.astral ? "YES" : "NO"},${item.astralCount || 0},${item.divine ? "YES" : "NO"},${item.void ? "YES" : "NO"}\n`;
+      });
+      const blob = new Blob([csvStr], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `ThrowACoin_Tracker_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+    };
+
+    // JSON 備份與匯入
+    document.getElementById("export-json-btn").onclick = () => {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ items: itemsData, customColumns: customColumns }, null, 2));
+      const a = document.createElement("a");
+      a.href = dataStr;
+      a.download = `backup_tac_${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+    };
+
+    importBtn.onclick = () => importFileInput.click();
+    importFileInput.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async (evt) => {
+        try {
+          const imported = JSON.parse(evt.target.result);
+          if (imported.items) itemsData = imported.items;
+          if (imported.customColumns) customColumns = imported.customColumns;
+          render();
+          await syncToCloud();
+          alert("備份資料成功匯入！");
+        } catch (err) {
+          alert("檔案格式不正確！");
+        }
+      };
+      reader.readAsText(file);
+    };
+
+    // ==================== 新增 / 刪除 列 (Item) ====================
+
+    // 1. ➕ 新增列 (物品)
+    const addItemBtn = document.getElementById("add-item-btn");
+    if (addItemBtn) {
+      addItemBtn.onclick = async () => {
+        if (!auth.currentUser) return;
+        const keys = Object.keys(itemsData).map(k => itemsData[k].id || 0);
+        const nextId = keys.length > 0 ? Math.max(...keys) + 1 : 1;
+        const name = prompt(`請輸入新物品 (ID #${nextId}) 的名稱：`, `物品 #${nextId}`);
+        if (!name) return;
+
+        itemsData[`item_${nextId}`] = {
+          id: nextId,
+          name: name.trim(),
+          rarity: "Common",
+          imageUrl: "",
+          astral: false,
+          astralCount: 0,
+          divine: false,
+          void: false,
+          extraFields: {}
+        };
+
+        render();
+        await syncToCloud();
+      };
+    }
+
+    // 2. 🗑️ 刪除最後一列
+    const deleteItemBtn = document.getElementById("delete-item-btn");
+    if (deleteItemBtn) {
+      deleteItemBtn.onclick = async () => {
+        if (!auth.currentUser) return;
+        const sortedKeys = Object.keys(itemsData).sort((a, b) => itemsData[a].id - itemsData[b].id);
+        if (sortedKeys.length === 0) return alert("目前沒有物品可刪除！");
+
+        const lastKey = sortedKeys[sortedKeys.length - 1];
+        const item = itemsData[lastKey];
+
+        if (confirm(`確定要刪除最後一列 [#${item.id} ${item.name}] 嗎？`)) {
+          delete itemsData[lastKey];
+          render();
+          await syncToCloud();
+        }
+      };
+    }
+
+    // ==================== 新增 / 刪除 欄 (Column) ====================
+
+    // 3. ➕ 新增欄位
+    const addColBtn = document.getElementById("add-col-btn");
+    if (addColBtn) {
+      addColBtn.onclick = async () => {
+        if (!auth.currentUser) return;
+        const name = prompt("請輸入新欄位名稱 (例如：SHINY, MUTATED)：");
+        if (!name) return;
+
+        const isBoolean = confirm("該欄位類型是否為「勾選框 (是/否)」？\n[按確定] 勾選方塊\n[按取消] 數字計數器");
+        const colKey = "col_" + Date.now();
+
+        customColumns.push({
+          key: colKey,
+          name: name.trim(),
+          type: isBoolean ? "boolean" : "number"
+        });
+
+        render();
+        await syncToCloud();
+      };
+    }
+
+    // 4. 🗑️ 刪除自訂欄位
+    const delColBtn = document.getElementById("del-col-btn");
+    if (delColBtn) {
+      delColBtn.onclick = async () => {
+        if (!auth.currentUser) return;
+        if (customColumns.length === 0) return alert("目前沒有自訂欄位可刪除！");
+
+        const namesList = customColumns.map((c, i) => `${i + 1}. ${c.name}`).join("\n");
+        const indexInput = prompt(`請輸入要刪除的欄位編號：\n${namesList}`);
+        const index = parseInt(indexInput, 10) - 1;
+
+        if (!isNaN(index) && index >= 0 && index < customColumns.length) {
+          const removedCol = customColumns.splice(index, 1)[0];
+          Object.keys(itemsData).forEach(k => {
+            if (itemsData[k].extraFields) delete itemsData[k].extraFields[removedCol.key];
+          });
+
+          render();
+          await syncToCloud();
+        }
+      };
+    }
+
+    // 初始繪製
+    render();
+  </script>
+</body>
+</html>
