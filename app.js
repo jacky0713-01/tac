@@ -1,3 +1,4 @@
+import { getFirestore, doc, setDoc, onSnapshot, deleteField } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -41,6 +42,7 @@ const defaultDatabase = {
 };
 
 const TOTAL_ITEMS = 188;
+// 預設寫成空物件即可，讓資料完全交給 Firestore 的 onSnapshot 決定
 let itemsData = {};
 
 for (let i = 1; i <= TOTAL_ITEMS; i++) {
@@ -441,6 +443,8 @@ if (addItemBtn) {
 
 const deleteItemBtn = document.getElementById("delete-item-btn");
 if (deleteItemBtn) {
+  const deleteItemBtn = document.getElementById("delete-item-btn");
+if (deleteItemBtn) {
   deleteItemBtn.onclick = async () => {
     if (!auth.currentUser) return;
     const sortedKeys = Object.keys(itemsData).sort((a, b) => itemsData[a].id - itemsData[b].id);
@@ -450,13 +454,24 @@ if (deleteItemBtn) {
     const item = itemsData[lastKey];
 
     if (confirm(`確定要刪除最後一列 [#${item.id} ${item.name}] 嗎？`)) {
+      // 1. 本地資料刪除
       delete itemsData[lastKey];
       render();
-      await syncToCloud();
+
+      // 2. 直接通知 Firebase 刪除 items 裡面的這個指定 Key
+      try {
+        await setDoc(doc(db, "tracker", "progress"), {
+          items: {
+            [lastKey]: deleteField() // 關鍵：明確告訴 Firebase 刪除這個 Key
+          }
+        }, { merge: true });
+        console.log(`成功從雲端刪除 ${lastKey}`);
+      } catch (e) {
+        console.error("刪除失敗：", e);
+      }
     }
   };
 }
-
 const addColBtn = document.getElementById("add-col-btn");
 if (addColBtn) {
   addColBtn.onclick = async () => {
