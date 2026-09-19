@@ -40,7 +40,7 @@
     }
 
     /* =========================================================
-       ✨ 華麗頂部標題與頭像動畫特效 (Glorious Header Effects)
+        ✨ 華麗頂部標題與頭像動畫特效 (Glorious Header Effects)
     ========================================================= */
     .title-group {
       display: flex;
@@ -261,6 +261,7 @@
     body:not(.read-only) .admin-only {
       display: inline-flex;
       gap: 12px;
+      flex-wrap: wrap;
     }
 
     .table-container {
@@ -462,7 +463,7 @@
     }
 
     /* =========================================================
-       🎴 卡牌相簿模式 (Card Gallery View) 與特效
+        🎴 卡牌相簿模式 (Card Gallery View) 與特效
     ========================================================= */
     .card-grid {
       display: grid;
@@ -639,7 +640,7 @@
     .card-badge-item.active-void { background: rgba(168, 85, 247, 0.25); color: #c084fc; border: 1px solid #a855f7; }
 
     /* =========================================================
-       🤝 交易助手 (Trading Helper) 彈窗與面板樣式
+        🤝 交易助手 (Trading Helper) 彈窗與面板樣式
     ========================================================= */
     .modal-overlay {
       position: fixed;
@@ -723,12 +724,12 @@
       <h1>新竹九降風清水疾風俠 Roblox Throw a Coin — Collection Index Tracker</h1>
     </div>
     <div class="auth-box">
-      <!-- 🎮 Roblox 聯絡方式：點擊跳轉個人主頁 (1876441) -->
+      <!-- 🎮 Roblox 聯絡方式：點擊跳轉個人主頁 -->
       <a href="https://www.roblox.com/users/10053396167/profile" target="_blank" rel="noopener noreferrer" class="btn btn-roblox" title="前往我的 Roblox 個人主頁">
         🎮 Roblox
       </a>
       
-      <!-- 📋 點擊快速複製 Username (請將 YourUsername 替換為你的帳號) -->
+      <!-- 📋 點擊快速複製 Username -->
       <button class="btn btn-secondary" onclick="copyRobloxID()" title="點擊複製 Roblox 帳號">
         📋 複製 ID
       </button>
@@ -742,7 +743,6 @@
 
   <script>
     function copyRobloxID() {
-      // 請在此處填寫你的 Roblox 帳號名稱 (Username)
       const robloxUsername = "1876441"; 
       navigator.clipboard.writeText(robloxUsername).then(() => {
         alert("已複製 Roblox 帳號：" + robloxUsername);
@@ -751,8 +751,6 @@
       });
     }
   </script>
-    </div>
-  </header>
 
   <div class="dashboard">
     <div class="stat-card">
@@ -782,6 +780,10 @@
     </div>
 
     <div class="admin-only">
+      <button id="add-item-btn" class="btn btn-success">➕ 新增物品 (列)</button>
+      <button id="delete-item-btn" class="btn btn-danger">🗑️ 刪除最後一列</button>
+      <button id="add-col-btn" class="btn btn-warning">➕ 新增欄位 (欄)</button>
+      <button id="del-col-btn" class="btn btn-danger">🗑️ 刪除自訂欄位</button>
       <button id="export-csv-btn" class="btn btn-secondary">📥 匯出 CSV</button>
       <button id="export-json-btn" class="btn btn-secondary">💾 備份 JSON</button>
       <button id="import-btn" class="btn btn-warning">📤 匯入 JSON 備份</button>
@@ -793,7 +795,7 @@
   <div id="table-view-container" class="table-container">
     <table>
       <thead>
-        <tr>
+        <tr id="table-header-row">
           <th style="width: 70px;">編號</th>
           <th style="width: 140px;">物品名稱</th>
           <th style="width: 100px; text-align: left; padding-left: 10px;">圖片</th>
@@ -849,6 +851,9 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
+    // 全域自訂欄位
+    let customColumns = [];
+
     const defaultDatabase = {
       163: { name: "Nautilus", rarity: "Chronal" },
       164: { name: "Training Dummy", rarity: "Carved" },
@@ -884,7 +889,8 @@
         astral: false,
         astralCount: 0,
         divine: false,
-        void: false
+        void: false,
+        extraFields: {}
       };
     }
 
@@ -906,7 +912,30 @@
     const tradeTextOutput = document.getElementById("trade-text-output");
     const copyTradeBtn = document.getElementById("copy-trade-btn");
 
+    function renderHeader() {
+      const headerRow = document.getElementById("table-header-row");
+      headerRow.innerHTML = `
+        <th style="width: 70px;">編號</th>
+        <th style="width: 140px;">物品名稱</th>
+        <th style="width: 100px; text-align: left; padding-left: 10px;">圖片</th>
+        <th style="width: 130px;">稀有度</th>
+        <th style="width: 120px; text-align: center;">ASTRAL</th>
+        <th style="width: 130px; text-align: center;">ASTRAL COUNT</th>
+        <th style="width: 120px; text-align: center;">DIVINE</th>
+        <th style="width: 120px; text-align: center;">VOID</th>
+      `;
+      
+      customColumns.forEach(col => {
+        const th = document.createElement("th");
+        th.style.textAlign = "center";
+        th.style.width = "120px";
+        th.innerText = col.name.toUpperCase();
+        headerRow.appendChild(th);
+      });
+    }
+
     function render() {
+      renderHeader();
       const query = searchInput.value.toLowerCase().trim();
       tbody.innerHTML = "";
       cardContainer.innerHTML = "";
@@ -929,12 +958,37 @@
         const matchSearch = item.name.toLowerCase().includes(query) || String(item.id).includes(query);
         if (!matchSearch) return;
 
-        const safeRarityName = item.rarity ? item.rarity.toLowerCase().replace(/[^a-z0-9]/g, '\\$&') : 'common';
+        const safeRarityName = item.rarity ? item.rarity.toLowerCase().replace(/[^a-z0-9]/g, '') : 'common';
         const rarityClass = `rarity-${safeRarityName}`;
         const isUnlocked = item.astral || item.divine || item.void || (item.astralCount > 0);
 
         // 1. 渲染表格列
         const tr = document.createElement("tr");
+        let extraTdHTML = "";
+        
+        customColumns.forEach(col => {
+          if (!item.extraFields) item.extraFields = {};
+          if (col.type === "boolean") {
+            const val = item.extraFields[col.key] || false;
+            extraTdHTML += `
+              <td class="status-cell" onclick="toggleExtraField('${key}', '${col.key}', 'boolean')">
+                <span class="badge ${val ? 'badge-collected' : 'badge-empty'}">${val ? '✓ 已收集' : '-'}</span>
+              </td>
+            `;
+          } else {
+            const val = item.extraFields[col.key] || 0;
+            extraTdHTML += `
+              <td class="status-cell">
+                <div class="count-box">
+                  <button class="count-btn" onclick="adjustExtraCount(event, '${key}', '${col.key}', -1)">-</button>
+                  <span onclick="editExtraCountDirect('${key}', '${col.key}')" style="min-width: 24px; text-align: center;">${val}</span>
+                  <button class="count-btn" onclick="adjustExtraCount(event, '${key}', '${col.key}', 1)">+</button>
+                </div>
+              </td>
+            `;
+          }
+        });
+
         tr.innerHTML = `
           <td><strong>#${item.id}</strong></td>
           <td class="editable-cell" ondblclick="editField('${key}', 'name')" title="登入後雙擊修改名稱"><strong>${item.name}</strong></td>
@@ -952,7 +1006,7 @@
           <td class="status-cell">
             <div class="count-box">
               <button class="count-btn" onclick="adjustCount(event, '${key}', -1)">-</button>
-              <span onclick="editCountDirect('${key}')" style="min-width: 24px; text-align: center; font-weight: 700;">${item.astralCount || 0}</span>
+              <span onclick="editCountDirect('${key}')" style="min-width: 24px; text-align: center;">${item.astralCount || 0}</span>
               <button class="count-btn" onclick="adjustCount(event, '${key}', 1)">+</button>
             </div>
           </td>
@@ -962,125 +1016,42 @@
           <td class="status-cell" onclick="toggleStatus('${key}', 'void')">
             <span class="badge ${item.void ? 'badge-collected' : 'badge-empty'}">${item.void ? '✓ 已收集' : '-'}</span>
           </td>
+          ${extraTdHTML}
         `;
         tbody.appendChild(tr);
 
         // 2. 渲染卡牌相簿
-        const fxClass = item.rarity ? `fx-${item.rarity.toLowerCase().replace(/[^a-z0-9]/g, '')}` : '';
-
         const card = document.createElement("div");
-        card.className = `item-card ${isUnlocked ? 'unlocked' : 'locked'} ${fxClass}`;
+        card.className = `item-card ${isUnlocked ? 'unlocked fx-' + safeRarityName : 'locked'}`;
         card.innerHTML = `
+          ${!isUnlocked ? `<div class="lock-icon">🔒</div>` : ''}
           <div class="card-id">#${item.id}</div>
           <div class="card-img-wrapper">
-            ${item.imageUrl ? `<img src="${item.imageUrl}" class="card-img" alt="${item.name}">` : `<span class="img-placeholder">+圖片</span>`}
-            ${!isUnlocked ? '<div class="lock-icon">🔒</div>' : ''}
+            ${item.imageUrl ? `<img src="${item.imageUrl}" class="card-img" alt="${item.name}">` : `<span class="img-placeholder" style="font-size:2rem;">❓</span>`}
           </div>
-          <div class="card-title" title="${item.name}">${item.name}</div>
-          <span class="rarity-tag ${rarityClass}" style="margin-top: 4px; font-size: 0.7rem; padding: 2px 6px;">${item.rarity}</span>
+          <div class="card-title">${item.name}</div>
+          <div><span class="rarity-tag ${rarityClass}">${item.rarity}</span></div>
           <div class="card-badges">
-            <span class="card-badge-item ${item.astral ? 'active-astral' : ''}">A: ${item.astralCount || 0}</span>
-            <span class="card-badge-item ${item.divine ? 'active-divine' : ''}">D</span>
-            <span class="card-badge-item ${item.void ? 'active-void' : ''}">V</span>
+            <span class="card-badge-item ${item.astral ? 'active-astral' : ''}">Astral: ${item.astral ? '✓' : '-'} (${item.astralCount || 0})</span>
+            <span class="card-badge-item ${item.divine ? 'active-divine' : ''}">Divine: ${item.divine ? '✓' : '-'}</span>
+            <span class="card-badge-item ${item.void ? 'active-void' : ''}">Void: ${item.void ? '✓' : '-'}</span>
           </div>
         `;
         cardContainer.appendChild(card);
       });
 
-      document.getElementById("stat-astral").innerText = `${astralCollected} / ${TOTAL_ITEMS} (${((astralCollected/TOTAL_ITEMS)*100).toFixed(1)}%)`;
-      document.getElementById("stat-divine").innerText = `${divineCollected} / ${TOTAL_ITEMS} (${((divineCollected/TOTAL_ITEMS)*100).toFixed(1)}%)`;
-      document.getElementById("stat-void").innerText = `${voidCollected} / ${TOTAL_ITEMS} (${((voidCollected/TOTAL_ITEMS)*100).toFixed(1)}%)`;
+      // 更新儀表板數據
+      const totalCount = sortedKeys.length;
+      document.getElementById("stat-astral").innerText = `${astralCollected} / ${totalCount} (${Math.round((astralCollected / totalCount) * 100 || 0)}%)`;
+      document.getElementById("stat-divine").innerText = `${divineCollected} / ${totalCount} (${Math.round((divineCollected / totalCount) * 100 || 0)}%)`;
+      document.getElementById("stat-void").innerText = `${voidCollected} / ${totalCount} (${Math.round((voidCollected / totalCount) * 100 || 0)}%)`;
       document.getElementById("stat-count-total").innerText = astralCountSum;
-
-      updateTradingText();
     }
 
-    // 生成專屬 Discord 交易格式
-    function updateTradingText() {
-      let lfList = [];
-      let haveList = [];
-
-      const sortedKeys = Object.keys(itemsData).sort((a, b) => itemsData[a].id - itemsData[b].id);
-
-      sortedKeys.forEach(key => {
-        const item = itemsData[key];
-        const isUnlocked = item.astral || item.divine || item.void || (item.astralCount > 0);
-
-        // LF (未收集)
-        if (!isUnlocked) {
-          lfList.push(`Astral/Divine/Void "${item.name}"`);
-        }
-
-        // I have (多餘數量)
-        if (item.astralCount > 1) {
-          const extraCount = item.astralCount - 1;
-          haveList.push(`Astral "${item.name}" x${extraCount}`);
-        }
-      });
-
-      let tradeStr = `LF\n`;
-      tradeStr += lfList.length > 0 ? lfList.join('\n') : 'None';
-      tradeStr += `\n\nI have \n`;
-      tradeStr += haveList.length > 0 ? haveList.join('\n') : 'None';
-      tradeStr += `\n\nNo tradeback\nDM`;
-
-      tradeTextOutput.value = tradeStr;
-    }
-
-    // Modal 控制邏輯
-    tradeBtn.onclick = () => {
+    // 狀態開關與修改功能繫結至全域
+    window.toggleStatus = async (key, field) => {
       if (!auth.currentUser) return;
-      updateTradingText();
-      tradeOverlay.classList.add("active");
-    };
-
-    closeModalBtn.onclick = () => {
-      tradeOverlay.classList.remove("active");
-    };
-
-    tradeOverlay.onclick = (e) => {
-      if (e.target === tradeOverlay) tradeOverlay.classList.remove("active");
-    };
-
-    copyTradeBtn.onclick = () => {
-      tradeTextOutput.select();
-      navigator.clipboard.writeText(tradeTextOutput.value).then(() => {
-        const originalText = copyTradeBtn.innerText;
-        copyTradeBtn.innerText = "✓ 已成功複製！";
-        setTimeout(() => { copyTradeBtn.innerText = originalText; }, 2000);
-      });
-    };
-
-    // 視圖切換
-    btnViewTable.onclick = () => {
-      btnViewTable.classList.add("active");
-      btnViewCard.classList.remove("active");
-      tableViewContainer.style.display = "block";
-      cardContainer.style.display = "none";
-    };
-
-    btnViewCard.onclick = () => {
-      btnViewCard.classList.add("active");
-      btnViewTable.classList.remove("active");
-      tableViewContainer.style.display = "none";
-      cardContainer.style.display = "grid";
-    };
-
-    window.editField = async (key, field) => {
-      if (!auth.currentUser) return;
-      let labelMap = { name: '物品名稱', imageUrl: '圖片網址 (URL)', rarity: '稀有度' };
-      const currentVal = itemsData[key][field] || '';
-      const newVal = prompt(`請輸入新的 ${labelMap[field]}（編號 #${itemsData[key].id}）：`, currentVal);
-      if (newVal !== null) {
-        itemsData[key][field] = newVal.trim();
-        render();
-        await syncToCloud();
-      }
-    };
-
-    window.toggleStatus = async (key, type) => {
-      if (!auth.currentUser) return;
-      itemsData[key][type] = !itemsData[key][type];
+      itemsData[key][field] = !itemsData[key][field];
       render();
       await syncToCloud();
     };
@@ -1096,125 +1067,91 @@
 
     window.editCountDirect = async (key) => {
       if (!auth.currentUser) return;
-      const current = itemsData[key].astralCount || 0;
-      const input = prompt(`請輸入 ${itemsData[key].name} 的 Astral 數量：`, current);
-      if (input !== null && !isNaN(input)) {
-        itemsData[key].astralCount = Math.max(0, parseInt(input, 10));
+      const input = prompt("請輸入 Astral Count 數量：", itemsData[key].astralCount || 0);
+      if (input !== null) {
+        const val = parseInt(input, 10);
+        if (!isNaN(val) && val >= 0) {
+          itemsData[key].astralCount = val;
+          render();
+          await syncToCloud();
+        }
+      }
+    };
+
+    window.editField = async (key, field) => {
+      if (!auth.currentUser) return;
+      const oldVal = itemsData[key][field] || "";
+      const newVal = prompt(`修改 ${field}:`, oldVal);
+      if (newVal !== null) {
+        itemsData[key][field] = newVal.trim();
         render();
         await syncToCloud();
       }
     };
 
+    window.toggleExtraField = async (key, colKey, type) => {
+      if (!auth.currentUser) return;
+      if (!itemsData[key].extraFields) itemsData[key].extraFields = {};
+      itemsData[key].extraFields[colKey] = !itemsData[key].extraFields[colKey];
+      render();
+      await syncToCloud();
+    };
+
+    window.adjustExtraCount = async (e, key, colKey, delta) => {
+      e.stopPropagation();
+      if (!auth.currentUser) return;
+      if (!itemsData[key].extraFields) itemsData[key].extraFields = {};
+      const current = itemsData[key].extraFields[colKey] || 0;
+      itemsData[key].extraFields[colKey] = Math.max(0, current + delta);
+      render();
+      await syncToCloud();
+    };
+
+    window.editExtraCountDirect = async (key, colKey) => {
+      if (!auth.currentUser) return;
+      if (!itemsData[key].extraFields) itemsData[key].extraFields = {};
+      const input = prompt("請輸入數量：", itemsData[key].extraFields[colKey] || 0);
+      if (input !== null) {
+        const val = parseInt(input, 10);
+        if (!isNaN(val) && val >= 0) {
+          itemsData[key].extraFields[colKey] = val;
+          render();
+          await syncToCloud();
+        }
+      }
+    };
+
     async function syncToCloud() {
       try {
-        await setDoc(doc(db, "tracker", "progress"), { items: itemsData }, { merge: true });
+        await setDoc(doc(db, "tracker", "progress"), { 
+          items: itemsData,
+          customColumns: customColumns 
+        }, { merge: true });
       } catch (e) {
-        console.error("同步失敗：", e);
+        console.error("同步至 Firebase 失敗：", e);
       }
     }
 
+    // 監聽 Firebase 雲端即時資料變更
     onSnapshot(doc(db, "tracker", "progress"), (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data();
-        if (data.items) {
-          Object.keys(data.items).forEach(key => {
-            if (itemsData[key]) {
-              itemsData[key] = { ...itemsData[key], ...data.items[key] };
-            }
-          });
-          render();
-        }
+        if (data.items) itemsData = data.items;
+        if (data.customColumns) customColumns = data.customColumns;
+        render();
       }
     });
 
-    // 匯出 CSV
-    document.getElementById("export-csv-btn").onclick = () => {
-      if (!auth.currentUser) return;
-      let csvContent = "\uFEFF編號,物品名稱,稀有度,Astral,Astral數量,Divine,Void,圖片網址\n";
-      const sortedKeys = Object.keys(itemsData).sort((a, b) => itemsData[a].id - itemsData[b].id);
-      
-      sortedKeys.forEach(key => {
-        const item = itemsData[key];
-        const row = [
-          item.id,
-          `"${item.name.replace(/"/g, '""')}"`,
-          `"${item.rarity}"`,
-          item.astral ? "已收集" : "未收集",
-          item.astralCount || 0,
-          item.divine ? "已收集" : "未收集",
-          item.void ? "已收集" : "未收集",
-          `"${item.imageUrl || ''}"`
-        ];
-        csvContent += row.join(",") + "\n";
-      });
-
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.setAttribute("href", url);
-      link.setAttribute("download", `TAC_Collection_Backup_${new Date().toISOString().slice(0,10)}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    };
-
-    // 匯出 JSON
-    document.getElementById("export-json-btn").onclick = () => {
-      if (!auth.currentUser) return;
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(itemsData, null, 2));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `TAC_Collection_Data_${new Date().toISOString().slice(0,10)}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-    };
-
-    // 匯入 JSON 備份檔案
-    importBtn.onclick = () => {
-      if (!auth.currentUser) return;
-      importFileInput.click();
-    };
-
-    importFileInput.onchange = (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        try {
-          const importedData = JSON.parse(event.target.result);
-          if (typeof importedData === 'object' && importedData !== null) {
-            if (confirm("警告：匯入新資料將會覆蓋當前雲端資料庫的設定，確定要匯入嗎？")) {
-              itemsData = { ...itemsData, ...importedData };
-              render();
-              await syncToCloud();
-              alert("資料匯入成功並已同步至雲端！");
-            }
-          } else {
-            alert("匯入失敗：格式不符合 JSON 資料架構！");
-          }
-        } catch (err) {
-          alert("匯入失敗：無法解析該 JSON 檔案！");
-        }
-        importFileInput.value = '';
-      };
-      reader.readAsText(file);
-    };
-
-    searchInput.addEventListener("input", render);
-
-    onAuthStateChanged(auth, (user) => {
+    // 登入狀態監聽
+    onAuthStateChanged(auth, user => {
       if (user) {
         document.body.classList.remove("read-only");
-        authStatus.innerText = `管理者已登入 (${user.email})`;
+        authStatus.innerText = "當前狀態：管理員模式";
         authBtn.innerText = "登出";
-        authBtn.classList.add("btn-danger");
       } else {
         document.body.classList.add("read-only");
         authStatus.innerText = "當前狀態：瀏覽模式 (唯讀)";
         authBtn.innerText = "管理員登入";
-        authBtn.classList.remove("btn-danger");
       }
     });
 
@@ -1222,18 +1159,200 @@
       if (auth.currentUser) {
         await signOut(auth);
       } else {
-        const email = prompt("請輸入管理者 Email：");
+        const email = prompt("請輸入管理員 Email：");
         const password = prompt("請輸入密碼：");
         if (email && password) {
           try {
             await signInWithEmailAndPassword(auth, email, password);
-          } catch (err) {
-            alert("登入失敗：帳號或密碼錯誤！");
+          } catch (e) {
+            alert("登入失敗：" + e.message);
           }
         }
       }
     };
 
+    // 切換頁籤
+    btnViewTable.onclick = () => {
+      btnViewTable.classList.add("active");
+      btnViewCard.classList.remove("active");
+      tableViewContainer.style.display = "block";
+      cardContainer.style.display = "none";
+    };
+
+    btnViewCard.onclick = () => {
+      btnViewCard.classList.add("active");
+      btnViewTable.classList.remove("active");
+      cardContainer.style.display = "grid";
+      tableViewContainer.style.display = "none";
+    };
+
+    searchInput.oninput = () => render();
+
+    // 交易助手 Modal 開關
+    tradeBtn.onclick = () => {
+      let output = "【Throw a Coin - 收集圖鑑清單】\n";
+      output += "-----------------------------\n";
+      Object.keys(itemsData).forEach(k => {
+        const item = itemsData[k];
+        if (item.astral || item.divine || item.void || item.astralCount > 0) {
+          output += `#${item.id} ${item.name} (${item.rarity}): `;
+          let tags = [];
+          if (item.astral) tags.push(`Astral x${item.astralCount || 1}`);
+          if (item.divine) tags.push("Divine");
+          if (item.void) tags.push("Void");
+          output += tags.join(", ") + "\n";
+        }
+      });
+      tradeTextOutput.value = output;
+      tradeOverlay.classList.add("active");
+    };
+
+    closeModalBtn.onclick = () => tradeOverlay.classList.remove("active");
+    copyTradeBtn.onclick = () => {
+      navigator.clipboard.writeText(tradeTextOutput.value);
+      alert("交易格式文字已複製！");
+    };
+
+    // CSV 匯出
+    document.getElementById("export-csv-btn").onclick = () => {
+      let csvStr = "\uFEFFID,Name,Rarity,Astral,AstralCount,Divine,Void\n";
+      Object.keys(itemsData).forEach(k => {
+        const item = itemsData[k];
+        csvStr += `${item.id},"${item.name}","${item.rarity}",${item.astral ? "YES" : "NO"},${item.astralCount || 0},${item.divine ? "YES" : "NO"},${item.void ? "YES" : "NO"}\n`;
+      });
+      const blob = new Blob([csvStr], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `ThrowACoin_Tracker_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+    };
+
+    // JSON 備份與匯入
+    document.getElementById("export-json-btn").onclick = () => {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ items: itemsData, customColumns: customColumns }, null, 2));
+      const a = document.createElement("a");
+      a.href = dataStr;
+      a.download = `backup_tac_${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+    };
+
+    importBtn.onclick = () => importFileInput.click();
+    importFileInput.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async (evt) => {
+        try {
+          const imported = JSON.parse(evt.target.result);
+          if (imported.items) itemsData = imported.items;
+          if (imported.customColumns) customColumns = imported.customColumns;
+          render();
+          await syncToCloud();
+          alert("備份資料成功匯入！");
+        } catch (err) {
+          alert("檔案格式不正確！");
+        }
+      };
+      reader.readAsText(file);
+    };
+
+    // ==================== 新增 / 刪除 列 (Item) ====================
+
+    // 1. ➕ 新增列 (物品)
+    const addItemBtn = document.getElementById("add-item-btn");
+    if (addItemBtn) {
+      addItemBtn.onclick = async () => {
+        if (!auth.currentUser) return;
+        const keys = Object.keys(itemsData).map(k => itemsData[k].id || 0);
+        const nextId = keys.length > 0 ? Math.max(...keys) + 1 : 1;
+        const name = prompt(`請輸入新物品 (ID #${nextId}) 的名稱：`, `物品 #${nextId}`);
+        if (!name) return;
+
+        itemsData[`item_${nextId}`] = {
+          id: nextId,
+          name: name.trim(),
+          rarity: "Common",
+          imageUrl: "",
+          astral: false,
+          astralCount: 0,
+          divine: false,
+          void: false,
+          extraFields: {}
+        };
+
+        render();
+        await syncToCloud();
+      };
+    }
+
+    // 2. 🗑️ 刪除最後一列
+    const deleteItemBtn = document.getElementById("delete-item-btn");
+    if (deleteItemBtn) {
+      deleteItemBtn.onclick = async () => {
+        if (!auth.currentUser) return;
+        const sortedKeys = Object.keys(itemsData).sort((a, b) => itemsData[a].id - itemsData[b].id);
+        if (sortedKeys.length === 0) return alert("目前沒有物品可刪除！");
+
+        const lastKey = sortedKeys[sortedKeys.length - 1];
+        const item = itemsData[lastKey];
+
+        if (confirm(`確定要刪除最後一列 [#${item.id} ${item.name}] 嗎？`)) {
+          delete itemsData[lastKey];
+          render();
+          await syncToCloud();
+        }
+      };
+    }
+
+    // ==================== 新增 / 刪除 欄 (Column) ====================
+
+    // 3. ➕ 新增欄位
+    const addColBtn = document.getElementById("add-col-btn");
+    if (addColBtn) {
+      addColBtn.onclick = async () => {
+        if (!auth.currentUser) return;
+        const name = prompt("請輸入新欄位名稱 (例如：SHINY, MUTATED)：");
+        if (!name) return;
+
+        const isBoolean = confirm("該欄位類型是否為「勾選框 (是/否)」？\n[按確定] 勾選方塊\n[按取消] 數字計數器");
+        const colKey = "col_" + Date.now();
+
+        customColumns.push({
+          key: colKey,
+          name: name.trim(),
+          type: isBoolean ? "boolean" : "number"
+        });
+
+        render();
+        await syncToCloud();
+      };
+    }
+
+    // 4. 🗑️ 刪除自訂欄位
+    const delColBtn = document.getElementById("del-col-btn");
+    if (delColBtn) {
+      delColBtn.onclick = async () => {
+        if (!auth.currentUser) return;
+        if (customColumns.length === 0) return alert("目前沒有自訂欄位可刪除！");
+
+        const namesList = customColumns.map((c, i) => `${i + 1}. ${c.name}`).join("\n");
+        const indexInput = prompt(`請輸入要刪除的欄位編號：\n${namesList}`);
+        const index = parseInt(indexInput, 10) - 1;
+
+        if (!isNaN(index) && index >= 0 && index < customColumns.length) {
+          const removedCol = customColumns.splice(index, 1)[0];
+          Object.keys(itemsData).forEach(k => {
+            if (itemsData[k].extraFields) delete itemsData[k].extraFields[removedCol.key];
+          });
+
+          render();
+          await syncToCloud();
+        }
+      };
+    }
+
+    // 初始繪製
     render();
   </script>
 </body>
