@@ -1,6 +1,5 @@
-import { getFirestore, doc, setDoc, onSnapshot, deleteField } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, onSnapshot, deleteField } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -41,23 +40,28 @@ const defaultDatabase = {
   181: { name: "Imperial Seal", rarity: "Imperial" }
 };
 
-const TOTAL_ITEMS = 188;
-// 預設寫成空物件即可，讓資料完全交給 Firestore 的 onSnapshot 決定
+// 修正：初始設為空物件，完全由 Firebase 雲端資料決定現有列表
 let itemsData = {};
 
-for (let i = 1; i <= TOTAL_ITEMS; i++) {
-  const preset = defaultDatabase[i] || {};
-  itemsData[`item_${i}`] = {
-    id: i,
-    name: preset.name || `物品 #${i}`,
-    rarity: preset.rarity || `Common`,
-    imageUrl: "",
-    astral: false,
-    astralCount: 0,
-    divine: false,
-    void: false,
-    extraFields: {}
-  };
+// 初始化預設資料的函式（僅在雲端完全沒有 items 資料時才預載）
+function generateDefaultItems() {
+  const TOTAL_ITEMS = 188;
+  const initialData = {};
+  for (let i = 1; i <= TOTAL_ITEMS; i++) {
+    const preset = defaultDatabase[i] || {};
+    initialData[`item_${i}`] = {
+      id: i,
+      name: preset.name || `物品 #${i}`,
+      rarity: preset.rarity || `Common`,
+      imageUrl: "",
+      astral: false,
+      astralCount: 0,
+      divine: false,
+      void: false,
+      extraFields: {}
+    };
+  }
+  return initialData;
 }
 
 const tbody = document.getElementById("table-body");
@@ -284,7 +288,6 @@ window.editExtraCountDirect = async (key, colKey) => {
 
 async function syncToCloud() {
   try {
-    // 移除 { merge: true }，直接用前端最新的 itemsData 完全覆蓋雲端文件
     await setDoc(doc(db, "tracker", "progress"), { 
       items: itemsData,
       customColumns: customColumns 
@@ -295,12 +298,17 @@ async function syncToCloud() {
   }
 }
 
-onSnapshot(doc(db, "tracker", "progress"), (docSnap) => {
+// 雲端監聽：首次若沒有資料會用預設 188 筆初始化
+onSnapshot(doc(db, "tracker", "progress"), async (docSnap) => {
   if (docSnap.exists()) {
     const data = docSnap.data();
     if (data.items) itemsData = data.items;
     if (data.customColumns) customColumns = data.customColumns;
     render();
+  } else {
+    itemsData = generateDefaultItems();
+    render();
+    await syncToCloud();
   }
 });
 
@@ -408,13 +416,13 @@ importFileInput.onchange = (e) => {
       await syncToCloud();
       alert("備份資料成功匯入！");
     } catch (err) {
-          alert("檔案格式不正確！");
+      alert("檔案格式不正確！");
     }
   };
   reader.readAsText(file);
 };
 
-// 新增/刪除 列與欄
+// 新增列
 const addItemBtn = document.getElementById("add-item-btn");
 if (addItemBtn) {
   addItemBtn.onclick = async () => {
@@ -441,9 +449,8 @@ if (addItemBtn) {
   };
 }
 
+// 刪除最後一列 (精確徹底刪除)
 const deleteItemBtn = document.getElementById("delete-item-btn");
-if (deleteItemBtn) {
-  const deleteItemBtn = document.getElementById("delete-item-btn");
 if (deleteItemBtn) {
   deleteItemBtn.onclick = async () => {
     if (!auth.currentUser) return;
@@ -454,24 +461,26 @@ if (deleteItemBtn) {
     const item = itemsData[lastKey];
 
     if (confirm(`確定要刪除最後一列 [#${item.id} ${item.name}] 嗎？`)) {
-      // 1. 本地資料刪除
       delete itemsData[lastKey];
       render();
-
-      // 2. 直接通知 Firebase 刪除 items 裡面的這個指定 Key
+      await syncToCloud();
+      
+      // 同時向 Firebase 發送欄位刪除指令
       try {
         await setDoc(doc(db, "tracker", "progress"), {
           items: {
-            [lastKey]: deleteField() // 關鍵：明確告訴 Firebase 刪除這個 Key
+            [lastKey]: deleteField()
           }
         }, { merge: true });
-        console.log(`成功從雲端刪除 ${lastKey}`);
+        console.log(`成功從雲端抹除 ${lastKey}`);
       } catch (e) {
-        console.error("刪除失敗：", e);
+        console.error("雲端抹除失敗：", e);
       }
     }
   };
 }
+
+// 新增欄位
 const addColBtn = document.getElementById("add-col-btn");
 if (addColBtn) {
   addColBtn.onclick = async () => {
@@ -493,6 +502,7 @@ if (addColBtn) {
   };
 }
 
+// 刪除欄位
 const delColBtn = document.getElementById("del-col-btn");
 if (delColBtn) {
   delColBtn.onclick = async () => {
@@ -514,5 +524,3 @@ if (delColBtn) {
     }
   };
 }
-
-render();
