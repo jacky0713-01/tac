@@ -282,10 +282,12 @@ window.editExtraCountDirect = async (key, colKey) => {
 
 async function syncToCloud() {
   try {
+    // 移除 { merge: true }，直接用前端最新的 itemsData 完全覆蓋雲端文件
     await setDoc(doc(db, "tracker", "progress"), { 
       items: itemsData,
       customColumns: customColumns 
-    }, { merge: true });
+    });
+    console.log("雲端同步成功！");
   } catch (e) {
     console.error("同步至 Firebase 失敗：", e);
   }
