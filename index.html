@@ -782,6 +782,10 @@
     </div>
 
     <div class="admin-only">
+      <button id="add-item-btn" class="btn btn-success">➕ 新增物品 (列)</button>
+      <button id="delete-item-btn" class="btn btn-danger">🗑️ 刪除最後一列</button>
+      <button id="add-col-btn" class="btn btn-warning">➕ 新增欄位 (欄)</button>
+      <button id="del-col-btn" class="btn btn-danger">🗑️ 刪除自訂欄位</button>
       <button id="export-csv-btn" class="btn btn-secondary">📥 匯出 CSV</button>
       <button id="export-json-btn" class="btn btn-secondary">💾 備份 JSON</button>
       <button id="import-btn" class="btn btn-warning">📤 匯入 JSON 備份</button>
@@ -848,8 +852,8 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
-
-    const defaultDatabase = {
+    let customColumns = []; // 儲存動態欄位
+      const defaultDatabase = {
       163: { name: "Nautilus", rarity: "Chronal" },
       164: { name: "Training Dummy", rarity: "Carved" },
       165: { name: "Golden Fan", rarity: "Carved" },
@@ -1236,5 +1240,114 @@
 
     render();
   </script>
+  // ==================== 新增 / 刪除 列 (Item) ====================
+
+// 1. ➕ 新增列 (物品)
+const addItemBtn = document.getElementById("add-item-btn");
+if (addItemBtn) {
+  addItemBtn.onclick = async () => {
+    if (!auth.currentUser) return;
+    const keys = Object.keys(itemsData).map(k => itemsData[k].id || 0);
+    const nextId = keys.length > 0 ? Math.max(...keys) + 1 : 1;
+    const name = prompt(`請輸入新物品 (ID #${nextId}) 的名稱：`, `物品 #${nextId}`);
+    if (!name) return;
+
+    // 建立新資料
+    itemsData[`item_${nextId}`] = {
+      id: nextId,
+      name: name.trim(),
+      rarity: "Common",
+      imageUrl: "",
+      astral: false,
+      astralCount: 0,
+      divine: false,
+      void: false,
+      extraFields: {}
+    };
+
+    render();
+    await syncToCloud();
+  };
+}
+
+// 2. 🗑️ 刪除最後一列
+const deleteItemBtn = document.getElementById("delete-item-btn");
+if (deleteItemBtn) {
+  deleteItemBtn.onclick = async () => {
+    if (!auth.currentUser) return;
+    const sortedKeys = Object.keys(itemsData).sort((a, b) => itemsData[a].id - itemsData[b].id);
+    if (sortedKeys.length === 0) return alert("目前沒有物品可刪除！");
+
+    const lastKey = sortedKeys[sortedKeys.length - 1];
+    const item = itemsData[lastKey];
+
+    if (confirm(`確定要刪除最後一列 [#${item.id} ${item.name}] 嗎？`)) {
+      delete itemsData[lastKey];
+      render();
+      await syncToCloud();
+    }
+  };
+}
+
+// ==================== 新增 / 刪除 欄 (Column) ====================
+
+// 3. ➕ 新增欄位
+const addColBtn = document.getElementById("add-col-btn");
+if (addColBtn) {
+  addColBtn.onclick = async () => {
+    if (!auth.currentUser) return;
+    const name = prompt("請輸入新欄位名稱 (例如：SHINY, MUTATED)：");
+    if (!name) return;
+
+    const isBoolean = confirm("該欄位類型是否為「勾選框 (是/否)」？\n[按確定] 勾選方塊\n[按取消] 數字計數器");
+    const colKey = "col_" + Date.now();
+
+    customColumns.push({
+      key: colKey,
+      name: name.trim(),
+      type: isBoolean ? "boolean" : "number"
+    });
+
+    render();
+    await syncToCloud();
+  };
+}
+
+// 4. 🗑️ 刪除自訂欄位
+const delColBtn = document.getElementById("del-col-btn");
+if (delColBtn) {
+  delColBtn.onclick = async () => {
+    if (!auth.currentUser) return;
+    if (customColumns.length === 0) return alert("目前沒有自訂欄位可刪除！");
+
+    const namesList = customColumns.map((c, i) => `${i + 1}. ${c.name}`).join("\n");
+    const indexInput = prompt(`請輸入要刪除的欄位編號：\n${namesList}`);
+    const index = parseInt(indexInput, 10) - 1;
+
+    if (!isNaN(index) && index >= 0 && index < customColumns.length) {
+      const removedCol = customColumns.splice(index, 1)[0];
+      // 清除各項物品內的該欄位資料
+      Object.keys(itemsData).forEach(k => {
+        if (itemsData[k].extraFields) delete itemsData[k].extraFields[removedCol.key];
+      });
+
+      render();
+      await syncToCloud();
+    }
+  };
+}
+
+// 5. 修改 syncToCloud 讓 Firebase 一併儲存 customColumns
+const originalSyncToCloud = syncToCloud;
+syncToCloud = async function() {
+  try {
+    await setDoc(doc(db, "tracker", "progress"), { 
+      items: itemsData,
+      customColumns: customColumns 
+    }, { merge: true });
+  } catch (e) {
+    console.error("同步失敗：", e);
+  }
+};
 </body>
 </html>
